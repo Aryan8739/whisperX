@@ -1,94 +1,191 @@
-// ---- Anonymous ID ----
-let anonId = localStorage.getItem("anon_id");
-if (!anonId) {
-  anonId = "anon_" + Math.floor(Math.random() * 1000000);
-  localStorage.setItem("anon_id", anonId);
+// we use the global supabase made in supabase.js
+const supabase = window.supabase;
+
+let currentUid = null;
+let currentNickname = null;
+
+// ---------- Auth & User ----------
+
+async function ensureAnonymousLogin() {
+  let { data: authData } = await supabase.auth.getUser();
+
+  if (!authData?.user) {
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error) {
+      console.error("Anonymous login error:", error);
+      return null;
+    }
+    authData = { user: data.user };
+  }
+
+  return authData.user;
 }
 
-// ---- Add post to feed ----
-function addPostToFeed(post) {
-  const feed = document.getElementById("feed");
-
-  const div = document.createElement("div");
-  div.style = "border:1px solid #ccc;padding:8px;margin:8px 0;";
-  div.innerHTML = `
-    <strong>${post.user_id}</strong><br>
-    ${post.text_content}
-  `;
-
-  feed.prepend(div);
-}
-
-// ---- Load initial posts ----
-async function loadPosts() {
-  console.log("Loading posts...");
-
-  const { data, error } = await window.supabase
-    .from("posts")
+async function getOrCreateUser(uid) {
+  // try read
+  let { data, error } = await supabase
+    .from("users")
     .select("*")
-    .order("created_at", { ascending: false })
-    .limit(20);
+    .eq("uid", uid)
+    .maybeSingle();
 
   if (error) {
-    console.error("Error loading posts:", error);
-    document.getElementById("feed").innerHTML =
-      "<p style='color:red;'>Failed to load posts.</p>";
-    return;
+    console.error("users select error:", error);
   }
 
-  const feed = document.getElementById("feed");
-  feed.innerHTML = "";
+  if (data) return data;
 
-  if (!data || data.length === 0) {
-    feed.innerHTML = "<p>No posts yet.</p>";
-    return;
+  // create if missing
+  const insert = await supabase
+    .from("users")
+    .insert({ uid })
+    .select()
+    .single();
+
+  if (insert.error) {
+    console.error("users insert error:", insert.error);
+    return null;
   }
 
-  data.forEach(post => addPostToFeed(post));
+  return insert.data;
 }
 
-// ---- Export postWhisper ----
+// ---------- Nickname ----------
+
+function showNicknameModal() {
+  const modal = document.getElementById("nicknameModal");
+  modal.style.display = "flex";
+}
+
+function hideNicknameModal() {
+  const modal = document.getElementById("nicknameModal");
+  modal.style.display = "none";
+}
+
+export async function saveNickname() {
+  const input = document.getElementById("nicknameInput");
+  const nickname = input.value.trim();
+  if (!nickname || !currentUid) return;
+
+  const { error } = await supabase
+    .from("users")
+    .update({ nickname })
+    .eq("uid", currentUid);
+
+  if (error) {
+    console.error("nickname update error:", error);
+    return;
+  }
+
+  currentNickname = nickname;
+  hideNicknameModal();
+}
+
+// ---------- Posts ----------
+
+function renderPost(post) {
+  const wrapper = document.createElement("div");
+  wrapper.style = "border:1px solid #ccc;margin:4px 0;padding:6px;";
+
+  const nick = post.nickname || "Anon";
+  const time = post.created_at
+    ? new Date(post.created_at).toLocaleString()
+    : "";
+
+  wrapper.innerHTML = `
+    <strong>${nick} • ${time}</strong><br/>
+    ${post.text_content || ""}
+  `;
+
+  return wrapper;
+}
+
+function prependPostToUI(post) {
+  const container = document.getElementById("posts");
+  const node = renderPost(post);
+  container.prepend(node);
+}
+
 export async function postWhisper() {
-  const text = document.getElementById("whisperBox").value.trim();
-  if (!text) return;
+  const input = document.getElementById("whisperInput");
+  const text = input.value.trim();
+  if (!text || !currentUid) return;
 
-  const expires = new Date(Date.now() + 86400000).toISOString();
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-  const { error } = await window.supabase
+  const { data, error } = await supabase
     .from("posts")
     .insert({
       type: "whisper",
       text_content: text,
-      user_id: anonId,
+      audio_url: null,
+      user_id: currentUid,
+      nickname: currentNickname,
       expires_at: expires
-    });
+      // created_at will use default if you set one, otherwise you can add:
+      // created_at: new Date().toISOString()
+    })
+    .select()
+    .single();
 
   if (error) {
-    console.error("Insert ERROR:", error);
-    alert("Error posting: " + error.message);
+    console.error("Insert error:", error);
     return;
   }
 
-  document.getElementById("whisperBox").value = "";
+  input.value = "";
+  prependPostToUI(data);
 }
 
-// ---- Realtime listener ----
-function enableRealtime() {
-  window.supabase
+async function loadPosts() {
+  const container = document.getElementById("posts");
+  container.innerHTML = "Loading posts...";
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error("loadPosts error:", error);
+    container.innerHTML = "Failed to load posts.";
+    return;
+  }
+
+  container.innerHTML = "";
+  data.forEach(post => container.appendChild(renderPost(post)));
+}
+
+function setupRealtime() {
+  supabase
     .channel("posts-channel")
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "posts" },
-      (payload) => {
-        console.log("Realtime new post:", payload.new);
-        addPostToFeed(payload.new);
+      payload => {
+        prependPostToUI(payload.new);
       }
     )
     .subscribe();
 }
 
-// ---- EXPORT initApp ----
-export function initApp() {
-  loadPosts();
-  enableRealtime();
+// ---------- INIT ----------
+
+export async function initApp() {
+  // login
+  const user = await ensureAnonymousLogin();
+  if (!user) return;
+  currentUid = user.id;
+
+  // user row + nickname
+  const userRow = await getOrCreateUser(currentUid);
+  currentNickname = userRow?.nickname || null;
+
+  if (!currentNickname) {
+    showNicknameModal();
+  }
+
+  await loadPosts();
+  setupRealtime();
 }

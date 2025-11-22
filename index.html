@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Campus Whisper</title>
 </head>
 <body>
 
-  <h1>Campus Whisper (Prototype)</h1>
+  <h2>Campus Whisper (Prototype)</h2>
 
-  <textarea id="whisperBox" placeholder="Say something..." rows="3" cols="40"></textarea>
-  <br>
+  <textarea id="whisperInput" placeholder="Say something..." rows="2" cols="60"></textarea>
+  <br />
   <button id="postButton">Post</button>
 
-  <h2>Recent Posts</h2>
-  <div id="feed"></div>
+  <h3>Recent Posts</h3>
+  <div id="posts"></div>
 
-  <!-- Correct module loading order -->
+  <!-- Nickname Modal -->
+  <div id="nicknameModal" style="
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+  ">
+    <div style="background:#fff;padding:20px;border-radius:8px;">
+      <h4>Choose a nickname</h4>
+      <input id="nicknameInput" placeholder="e.g. ShadowCat" />
+      <button id="saveNicknameBtn">Save</button>
+    </div>
+  </div>
+
+  <!-- Single module script that wires everything -->
   <script type="module">
-    // 1. Load Supabase client
     import { supabase } from "./supabase.js";
     window.supabase = supabase;
 
-    // 2. Load app.js AFTER supabase exists
-    import { postWhisper, initApp } from "./app.js";
+    import { initApp, postWhisper, saveNickname } from "./app.js";
 
-    // 3. Attach click listener
+    // make functions visible to HTML if needed later
+    window.postWhisper = postWhisper;
+    window.saveNickname = saveNickname;
+
     document.getElementById("postButton").onclick = postWhisper;
+    document.getElementById("saveNicknameBtn").onclick = saveNickname;
 
-    // 4. Start the app
+    // start the app
     initApp();
   </script>
-
 </body>
 </html>
