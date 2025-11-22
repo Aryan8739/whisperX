@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Campus Whisper Prototype</title>
+</head>
+<body>
+
+  <h1>Campus Whisper (Prototype)</h1>
+
+  <textarea id="whisperBox" placeholder="Say something..." rows="3" cols="40"></textarea>
+  <br>
+  <button onclick="postWhisper()">Post</button>
+
+  <h2>Recent Posts</h2>
+  <div id="feed"></div>
+
+  <script type="module">
+  import { supabase } from './supabase.js';
+  window.supabase = supabase; // expose globally
+</script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
