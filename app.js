@@ -80,3 +80,30 @@ loadPosts();
 
 // Refresh feed every 5 seconds
 setInterval(loadPosts, 5000);
+
+
+
+// ---- REALTIME SUBSCRIPTION ----
+supabase
+  .channel('posts-channel')
+  .on(
+    'postgres_changes',
+    { event: 'INSERT', schema: 'public', table: 'posts' },
+    (payload) => {
+      console.log("Realtime new post:", payload.new);
+
+      const post = payload.new;
+
+      const feed = document.getElementById("feed");
+
+      const div = document.createElement("div");
+      div.style = "border:1px solid #ccc;padding:8px;margin:8px 0;";
+      div.innerHTML = `
+        <strong>${post.user_id}</strong><br>
+        ${post.text_content}
+      `;
+
+      feed.prepend(div); // add on top
+    }
+  )
+  .subscribe();
