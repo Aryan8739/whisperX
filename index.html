@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Campus Whisper Prototype</title>
+  <title>Campus Whisper</title>
 </head>
 <body>
 
@@ -10,17 +10,26 @@
 
   <textarea id="whisperBox" placeholder="Say something..." rows="3" cols="40"></textarea>
   <br>
-  <button onclick="postWhisper()">Post</button>
+  <button id="postButton">Post</button>
 
   <h2>Recent Posts</h2>
   <div id="feed"></div>
 
+  <!-- Correct module loading order -->
   <script type="module">
-  import { supabase } from './supabase.js';
-  window.supabase = supabase; // expose globally
-</script>
+    // 1. Load Supabase client
+    import { supabase } from "./supabase.js";
+    window.supabase = supabase;
 
-<script src="app.js"></script>
+    // 2. Load app.js AFTER supabase exists
+    import { postWhisper, initApp } from "./app.js";
+
+    // 3. Attach click listener
+    document.getElementById("postButton").onclick = postWhisper;
+
+    // 4. Start the app
+    initApp();
+  </script>
 
 </body>
 </html>
