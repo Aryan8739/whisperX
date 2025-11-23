@@ -1,52 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Campus Whisper</title>
+  <meta charset="UTF-8">
+  <title>Campus Whisper – CRT Terminal</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-
-  <h2>Campus Whisper (Prototype)</h2>
-
-  <textarea id="whisperInput" placeholder="Say something..." rows="2" cols="60"></textarea>
-  <br />
-  <button id="postButton">Post</button>
-
-  <h3>Recent Posts</h3>
-  <div id="posts"></div>
-
-  <!-- Nickname Modal -->
-  <div id="nicknameModal" style="
-    position: fixed;
-    inset: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.4);
-  ">
-    <div style="background:#fff;padding:20px;border-radius:8px;">
-      <h4>Choose a nickname</h4>
-      <input id="nicknameInput" placeholder="e.g. ShadowCat" />
-      <button id="saveNicknameBtn">Save</button>
+  <!-- Top terminal bar with menu -->
+  <div class="terminal-bar">
+    <div class="title">CAMPUS WHISPER — CRT TERMINAL</div>
+    <div class="menu">
+      <span class="menu-item" id="home-btn">Home</span>
+      <span class="menu-item" id="channels-btn">Channels</span>
+      <span class="menu-item" id="nickname-btn">Nickname</span>
+      <span class="menu-item" id="settings-btn">Settings</span>
     </div>
   </div>
 
-  <!-- Single module script that wires everything -->
-  <script type="module">
-    import { supabase } from "./supabase.js";
-    window.supabase = supabase;
+  <!-- CRT Glow Overlay -->
+  <div class="crt"></div>
 
-    import { initApp, postWhisper, saveNickname } from "./app.js";
+  <!-- Feed -->
+  <div id="feed"></div>
+  <!-- Nickname Modal -->
+<div id="nickname-modal" class="nick-modal hidden">
+  <div class="nick-box">
+    <h3>choose a nickname</h3>
+    <input id="nickname-input" placeholder="shadowcat">
+    <button id="save-nickname-btn">Save</button>
+  </div>
+</div>
 
-    // make functions visible to HTML if needed later
-    window.postWhisper = postWhisper;
-    window.saveNickname = saveNickname;
 
-    document.getElementById("postButton").onclick = postWhisper;
-    document.getElementById("saveNicknameBtn").onclick = saveNickname;
+  <!-- Terminal Input Bar -->
+  <div id="terminal">
+    <span id="prompt"></span>
+    <input id="terminal-input" type="text" autocomplete="off" autofocus />
+  </div>
 
-    // start the app
-    initApp();
-  </script>
+  <!-- Nickname Modal -->
+  <div id="nickname-modal" class="nick-modal hidden">
+    <div class="nick-box">
+      <h3>choose a nickname</h3>
+      <input id="nickname-input" placeholder="shadowcat">
+      <button id="save-nickname-btn">Save</button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
