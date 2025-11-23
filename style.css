@@ -8,13 +8,11 @@ body {
   padding-top: 45px; /* space for top bar */
 }
 
-/* Slight CRT scanline overlay */
+/* CRT Scanlines */
 .crt {
   pointer-events: none;
   position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background:
     repeating-linear-gradient(
       to bottom,
@@ -28,20 +26,19 @@ body {
 
 /* Posts container */
 #feed {
-  padding-bottom: 140px; /* space for input bar */
+  padding-bottom: 140px;
 }
 
-/* Terminal-style post lines */
+/* Terminal-style posts */
 .post {
+  padding: 12px 15px;
   border-bottom: 1px solid rgba(0,255,80,0.15);
-  padding: 10px 15px;
-  background: rgba(0,255,80,0.02);
   white-space: pre-wrap;
 }
 
 .post-header {
   font-weight: bold;
-  color: #00ff80;
+  color: #00ff99;
   text-shadow: 0 0 5px rgba(0,255,80,0.6);
   margin-bottom: 4px;
 }
@@ -51,7 +48,7 @@ body {
   text-shadow: 0 0 3px rgba(0,255,80,0.4);
 }
 
-/* Terminal INPUT BAR */
+/* Terminal input bar */
 #terminal {
   position: fixed;
   bottom: 0;
@@ -65,36 +62,35 @@ body {
   gap: 12px;
 }
 
-/* Nickname prompt */
 #prompt {
   font-weight: bold;
   text-shadow: 0 0 6px rgba(0,255,120,0.7);
+  color: #00ff55;
 }
 
-/* Terminal input */
 #terminal-input {
+  flex-grow: 1;
   background: transparent;
   border: none;
-  flex-grow: 1;
-  color: #00ff80;
   outline: none;
-  font-family: inherit;
+  color: #00ff80;
   font-size: 18px;
+  font-family: inherit;
   text-shadow: 0 0 3px rgba(0,255,80,0.5);
 }
 
-/* CRT GLOW & FLICKER */
+/* CRT flicker */
 @keyframes crt-flicker {
   0% { opacity: 1; }
   50% { opacity: 0.97; }
   100% { opacity: 1; }
 }
 
-body, #feed, #terminal {
+#feed, #terminal {
   animation: crt-flicker 0.15s infinite;
 }
 
-/* Terminal top bar with menu */
+/* TOP TERMINAL BAR */
 .terminal-bar {
   width: 100%;
   height: 32px;
@@ -105,27 +101,25 @@ body, #feed, #terminal {
   justify-content: space-between;
   padding: 0 15px;
   box-shadow: 0 0 10px #00ff55;
-  font-family: "Courier New", monospace;
+  font-family: "Courier New";
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
 }
 
-/* Title on left */
 .terminal-bar .title {
   color: #00ff55;
   font-size: 14px;
   font-weight: bold;
 }
 
-/* Menu on right */
+/* Menu */
 .menu {
   display: flex;
   gap: 18px;
 }
 
-/* Menu items */
 .menu-item {
   color: #00ff99;
   cursor: pointer;
@@ -138,11 +132,39 @@ body, #feed, #terminal {
   text-shadow: 0 0 9px #00ff99;
 }
 
-/* Nickname modal */
+/* CHANNEL DROPDOWN */
+.dropdown {
+  position: fixed;
+  top: 35px;
+  right: 15px;
+  background: #000;
+  border: 1px solid #00ff55;
+  box-shadow: 0 0 10px #00ff55;
+  width: 180px;
+  z-index: 9000;
+}
+
+.dropdown.hidden {
+  display: none;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  color: #00ff99;
+  border-bottom: 1px solid rgba(0,255,80,0.1);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: rgba(0,255,80,0.15);
+  color: #00ffaa;
+}
+
+/* NICKNAME MODAL */
 .nick-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0,0,0,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,8 +177,8 @@ body, #feed, #terminal {
 
 .nick-box {
   background: #000;
-  border: 1px solid #00ff55;
   padding: 20px;
+  border: 1px solid #00ff55;
   box-shadow: 0 0 20px #00ff55;
   text-align: center;
 }
@@ -164,6 +186,7 @@ body, #feed, #terminal {
 .nick-box h3 {
   margin: 0 0 10px;
   color: #00ff99;
+  text-shadow: 0 0 5px #00ff99;
 }
 
 .nick-box input {
@@ -183,45 +206,3 @@ body, #feed, #terminal {
   font-weight: bold;
   cursor: pointer;
 }
-
-/* Nickname modal */
-.nick-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20000;
-}
-
-.nick-modal.hidden {
-    display: none;
-}
-
-.nick-box {
-    background: #000;
-    border: 1px solid #00ff55;
-    padding: 20px;
-    box-shadow: 0 0 20px #00ff55;
-    text-align: center;
-}
-
-.nick-box input {
-    width: 220px;
-    padding: 6px;
-    background: #000;
-    border: 1px solid #00ff55;
-    color: #00ff66;
-    margin-bottom: 10px;
-}
-
-.nick-box button {
-    padding: 6px 14px;
-    background: #00ff55;
-    border: none;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-}
-

@@ -1,28 +1,28 @@
-import { supabase } from "./supabase.js"; // your existing client :contentReference[oaicite:1]{index=1}
+import { supabase } from "./supabase.js";
 
 let currentUser = null;
 let currentNickname = null;
+let currentChannel = localStorage.getItem("currentChannel") || "general";
 let realtimeChannel = null;
 
-/* --------- helpers --------- */
+/* ---------------- TIME AGO ---------------- */
 
 function timeAgo(dateString) {
   const now = new Date();
   const then = new Date(dateString);
-  const diffSec = (now - then) / 1000;
+  const diff = (now - then) / 1000;
 
-  if (diffSec < 60) return `${Math.floor(diffSec)} sec ago`;
-  const diffMin = diffSec / 60;
-  if (diffMin < 60) return `${Math.floor(diffMin)} min ago`;
-  const diffHours = diffMin / 60;
-  if (diffHours < 24) return `${Math.floor(diffHours)} hours ago`;
-  const diffDays = diffHours / 24;
-  return `${Math.floor(diffDays)} days ago`;
+  if (diff < 60) return `${Math.floor(diff)} sec ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+  return `${Math.floor(diff / 86400)} days ago`;
 }
+
+/* ---------------- UI HELPERS ---------------- */
 
 function updatePrompt() {
   const nick = currentNickname || "anon";
-  document.getElementById("prompt").textContent = `${nick}@campus:~$`;
+  document.getElementById("prompt").textContent = `${nick}@${currentChannel}:~$`;
 }
 
 function showNicknameModal() {
@@ -33,48 +33,35 @@ function hideNicknameModal() {
   document.getElementById("nickname-modal").classList.add("hidden");
 }
 
-/* --------- auth + users --------- */
+/* ---------------- AUTH + GET USER ROW ---------------- */
 
 async function ensureAuth() {
-  let { data, error } = await supabase.auth.getUser();
-  if (error) console.log("getUser error", error);
-
+  let { data } = await supabase.auth.getUser();
   if (data?.user) return data.user;
 
-  const { data: signData, error: signErr } = await supabase.auth.signInAnonymously();
-  if (signErr) {
-    console.error("anon sign-in error", signErr);
-    return null;
-  }
-
+  const { data: signData } = await supabase.auth.signInAnonymously();
   return signData.user;
 }
 
 async function getOrCreateUserRow(uid) {
-  let { data, error } = await supabase
+  let { data } = await supabase
     .from("users")
     .select("*")
     .eq("uid", uid)
     .maybeSingle();
 
-  if (error) console.log("users select error", error);
   if (data) return data;
 
-  const { data: inserted, error: insErr } = await supabase
+  const { data: inserted } = await supabase
     .from("users")
     .insert({ uid })
     .select()
     .single();
 
-  if (insErr) {
-    console.error("users insert error", insErr);
-    return null;
-  }
-
   return inserted;
 }
 
-/* --------- posts rendering --------- */
+/* ---------------- RENDER POSTS ---------------- */
 
 function renderPost(post) {
   const wrapper = document.createElement("div");
@@ -84,9 +71,7 @@ function renderPost(post) {
   header.className = "post-header";
 
   const nick = post.nickname || "anon";
-  const when = post.created_at ? timeAgo(post.created_at) : "";
-
-  header.textContent = `${nick}@campus ➤ [${when}]`;
+  header.textContent = `${nick}@${post.channel} ➤ [${timeAgo(post.created_at)}]`;
 
   const body = document.createElement("div");
   body.className = "post-text";
@@ -100,45 +85,48 @@ function renderPost(post) {
 
 function addPostToTop(post) {
   const feed = document.getElementById("feed");
-  const node = renderPost(post);
-  feed.insertBefore(node, feed.firstChild);
+  feed.insertBefore(renderPost(post), feed.firstChild);
 }
 
-/* --------- load + realtime --------- */
+/* ---------------- LOAD POSTS ---------------- */
 
 async function loadPosts() {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
+    .eq("channel", currentChannel)
     .order("created_at", { ascending: false })
     .limit(100);
 
-  if (error) {
-    console.error("loadPosts error", error);
-    return;
-  }
+  if (error) return console.error(error);
 
   const feed = document.getElementById("feed");
   feed.innerHTML = "";
+
   data.forEach(p => feed.appendChild(renderPost(p)));
 }
 
+/* ---------------- REALTIME ---------------- */
+
 function setupRealtime() {
-  if (realtimeChannel) return; // already subscribed
+  if (realtimeChannel) supabase.removeChannel(realtimeChannel);
 
   realtimeChannel = supabase
-    .channel("posts-channel")
+    .channel("channel-" + currentChannel)
     .on(
       "postgres_changes",
-      { event: "INSERT", schema: "public", table: "posts" },
-      payload => {
-        addPostToTop(payload.new);
-      }
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "posts",
+        filter: `channel=eq.${currentChannel}`
+      },
+      payload => addPostToTop(payload.new)
     )
     .subscribe();
 }
 
-/* --------- posting --------- */
+/* ---------------- POSTING ---------------- */
 
 let isPosting = false;
 
@@ -146,43 +134,37 @@ async function postWhisper(text) {
   if (!currentUser || isPosting) return;
   isPosting = true;
 
-  const expires = new Date(Date.now() + 86400000).toISOString(); // 24h
+  const expires = new Date(Date.now() + 86400000).toISOString();
   const nickname = currentNickname || "anon";
 
-  const { error } = await supabase
-    .from("posts")
-    .insert({
-      type: "whisper",
-      text_content: text,
-      audio_url: null,
-      user_id: currentUser.id,
-      nickname,
-      expires_at: expires
-    });
+  const { error } = await supabase.from("posts").insert({
+    type: "whisper",
+    text_content: text,
+    audio_url: null,
+    user_id: currentUser.id,
+    nickname,
+    expires_at: expires,
+    channel: currentChannel
+  });
 
-  if (error) {
-    console.error("insert error", error);
-  }
+  if (error) console.error("insert error", error);
 
   isPosting = false;
 }
 
-/* --------- nickname save --------- */
+/* ---------------- NICKNAME ---------------- */
 
 async function saveNicknameFromModal() {
   const input = document.getElementById("nickname-input");
   const nick = input.value.trim();
-  if (!nick || !currentUser) return;
+  if (!nick) return;
 
   const { error } = await supabase
     .from("users")
     .update({ nickname: nick })
     .eq("uid", currentUser.id);
 
-  if (error) {
-    console.error("nickname update error", error);
-    return;
-  }
+  if (error) return console.error(error);
 
   currentNickname = nick;
   localStorage.setItem("nickname", nick);
@@ -190,10 +172,30 @@ async function saveNicknameFromModal() {
   hideNicknameModal();
 }
 
-/* --------- init --------- */
+/* ---------------- CHANNEL SWITCHING ---------------- */
+
+function setupChannelDropdown() {
+  document.getElementById("channels-btn").onclick = () => {
+    document.getElementById("channel-dropdown").classList.toggle("hidden");
+  };
+
+  document.querySelectorAll(".dropdown-item").forEach(item => {
+    item.onclick = async () => {
+      currentChannel = item.dataset.channel;
+      localStorage.setItem("currentChannel", currentChannel);
+      document.getElementById("channel-dropdown").classList.add("hidden");
+
+      updatePrompt();
+      await loadPosts();
+      setupRealtime();
+    };
+  });
+}
+
+/* ---------------- MAIN INIT ---------------- */
 
 async function init() {
-  // attach input handler
+  // terminal input send
   const input = document.getElementById("terminal-input");
   input.addEventListener("keydown", async e => {
     if (e.key === "Enter") {
@@ -201,43 +203,41 @@ async function init() {
       if (!text) return;
       input.value = "";
       await postWhisper(text);
-      // UI will update via realtime
     }
   });
 
+  // nickname modal
   document.getElementById("save-nickname-btn")
     .addEventListener("click", saveNicknameFromModal);
 
-  // top menu actions
+  // menu actions
   document.getElementById("home-btn").onclick = () => loadPosts();
-  document.getElementById("channels-btn").onclick = () => {
-    alert("Channels coming soon :)");
-  };
   document.getElementById("nickname-btn").onclick = () => {
     document.getElementById("nickname-input").value = currentNickname || "";
     showNicknameModal();
   };
-  document.getElementById("settings-btn").onclick = () => {
-    alert("Settings coming soon :)");
-  };
+  document.getElementById("settings-btn").onclick = () =>
+    alert("Settings coming soon!");
 
-  // auth
+  setupChannelDropdown();
+
+  // authentication
   const user = await ensureAuth();
-  if (!user) return;
   currentUser = user;
 
-  // user row & nickname
+  // fetch user row
   const userRow = await getOrCreateUserRow(user.id);
+
+  // nickname priority: localStorage → db → ask user
   currentNickname =
     localStorage.getItem("nickname") ||
     userRow?.nickname ||
     null;
 
-  if (!currentNickname) {
-    showNicknameModal();
-  }
+  if (!currentNickname) showNicknameModal();
 
   updatePrompt();
+
   await loadPosts();
   setupRealtime();
 }
