@@ -106,10 +106,24 @@ function prependPostToUI(post) {
   container.prepend(node);
 }
 
+let isPosting = false;
+
 export async function postWhisper() {
+  if (isPosting) return;  // Prevent spam clicks
+  isPosting = true;
+
+  const btn = document.getElementById("postButton");
+  btn.disabled = true;
+  btn.textContent = "Posting...";
+
   const input = document.getElementById("whisperInput");
   const text = input.value.trim();
-  if (!text || !currentUid) return;
+  if (!text || !currentUid) {
+    isPosting = false;
+    btn.disabled = false;
+    btn.textContent = "Post";
+    return;
+  }
 
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
@@ -121,21 +135,24 @@ export async function postWhisper() {
       audio_url: null,
       user_id: currentUid,
       nickname: currentNickname,
-      expires_at: expires
-      // created_at will use default if you set one, otherwise you can add:
-      // created_at: new Date().toISOString()
+      expires_at: expires,
     })
     .select()
     .single();
 
   if (error) {
     console.error("Insert error:", error);
-    return;
+  } else {
+    input.value = "";
+    prependPostToUI(data);
   }
 
-  input.value = "";
-  prependPostToUI(data);
+  // Re-enable button
+  isPosting = false;
+  btn.disabled = false;
+  btn.textContent = "Post";
 }
+
 
 async function loadPosts() {
   const container = document.getElementById("posts");
@@ -157,8 +174,15 @@ async function loadPosts() {
   data.forEach(post => container.appendChild(renderPost(post)));
 }
 
+let realtimeChannel = null;
+
 function setupRealtime() {
-  supabase
+  if (realtimeChannel) {
+    // Already subscribed
+    return;
+  }
+
+  realtimeChannel = supabase
     .channel("posts-channel")
     .on(
       "postgres_changes",
@@ -169,6 +193,7 @@ function setupRealtime() {
     )
     .subscribe();
 }
+
 
 // ---------- INIT ----------
 
