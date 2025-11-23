@@ -1,0 +1,37 @@
+body {
+    background: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.center-box {
+    width: 300px;
+    margin: 10% auto;
+    padding: 30px;
+    background: #1c1c1c;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 15px 0;
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #4c6ef5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #3b5bdb;
+}

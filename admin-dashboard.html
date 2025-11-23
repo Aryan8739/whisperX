@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CampusX Admin Dashboard</title>
+  <link rel="stylesheet" href="./admin.css" />
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <header class="admin-header">
+      <div class="logo">CampusX Admin</div>
+      <nav class="admin-nav">
+        <span id="admin-status"></span>
+        <button id="admin-logout-btn" class="secondary-btn">Logout</button>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <!-- Analytics cards -->
+      <section class="admin-section">
+        <h2>Overview</h2>
+        <div class="cards-row">
+          <div class="card" id="card-total-posts">
+            <div class="card-label">Total Posts</div>
+            <div class="card-value" id="stat-posts">0</div>
+          </div>
+          <div class="card" id="card-total-users">
+            <div class="card-label">Users</div>
+            <div class="card-value" id="stat-users">0</div>
+          </div>
+          <div class="card" id="card-total-channels">
+            <div class="card-label">Channels</div>
+            <div class="card-value" id="stat-channels">0</div>
+          </div>
+          <div class="card" id="card-posts-24h">
+            <div class="card-label">Posts (24h)</div>
+            <div class="card-value" id="stat-posts-24h">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Realtime feed -->
+      <section class="admin-section">
+        <h2>Realtime Feed</h2>
+        <div id="admin-feed" class="feed-box"></div>
+      </section>
+
+      <!-- Posts management -->
+      <section class="admin-section">
+        <h2>Posts</h2>
+        <div id="admin-posts" class="list"></div>
+      </section>
+
+      <!-- Users management -->
+      <section class="admin-section">
+        <h2>Users</h2>
+        <div id="admin-users" class="list"></div>
+      </section>
+
+      <!-- Channels -->
+      <section class="admin-section">
+        <h2>Channels</h2>
+        <div class="channel-create">
+          <input id="new-channel-name" placeholder="Channel name" />
+          <input id="new-channel-topic" placeholder="Topic / description" />
+          <button id="create-channel-btn">Add channel</button>
+        </div>
+        <div id="admin-channels" class="list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>
