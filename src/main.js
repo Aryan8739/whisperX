@@ -192,10 +192,10 @@ function setupChannelDropdown() {
   });
 }
 
-/* ---------------- MAIN INIT ---------------- */
+
 
 async function init() {
-  // terminal input send
+
   const input = document.getElementById("terminal-input");
   input.addEventListener("keydown", async e => {
     if (e.key === "Enter") {
