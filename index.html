@@ -1,59 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Campus Whisper — CRT Terminal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusX — Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323:wght@400&display=swap"
+        rel="stylesheet" />
 </head>
 
 <body>
-
-  <!-- TOP CRT TERMINAL BAR -->
-  <div class="terminal-bar">
-    <div class="title">CAMPUS WHISPER — CRT TERMINAL</div>
-
-    <div class="menu">
-      <span class="menu-item" id="home-btn">Home</span>
-      <span class="menu-item" id="channels-btn">Channels ▾</span>
-      <span class="menu-item" id="nickname-btn">Nickname</span>
-      <span class="menu-item" id="settings-btn">Settings</span>
-    </div>
-  </div>
-
-  <!-- CHANNEL DROPDOWN -->
-  <div id="channel-dropdown" class="dropdown hidden">
-    <div class="dropdown-item" data-channel="general"># general</div>
-    <div class="dropdown-item" data-channel="confessions"># confessions</div>
-    <div class="dropdown-item" data-channel="tech"># tech</div>
-    <div class="dropdown-item" data-channel="events"># events</div>
-    <div class="dropdown-item" data-channel="hostel"># hostel</div>
-    <div class="dropdown-item" data-channel="random"># random</div>
-  </div>
-
-  <!-- CRT SCANLINE OVERLAY -->
-  <div class="crt"></div>
-
-  <!-- FEED -->
-  <div id="feed"></div>
-
-  <!-- TERMINAL INPUT -->
-  <div id="terminal">
-    <span id="prompt"></span>
-    <input id="terminal-input" type="text" autocomplete="off" autofocus />
-  </div>
-
-  <!-- NICKNAME MODAL -->
-  <div id="nickname-modal" class="nick-modal hidden">
-    <div class="nick-box">
-      <h3>choose a nickname</h3>
-      <input id="nickname-input" placeholder="shadowcat">
-      <button id="save-nickname-btn">Save</button>
-    </div>
-  </div>
-
-  <script type="module" src="/src/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
+
 </html>
