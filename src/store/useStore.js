@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { supabase } from "@/lib/supabase";
 
 export const useStore = create((set, get) => ({
-  // ── Auth ──────────────────────────────────────────────
+  // Auth
   user: null,
   nickname: localStorage.getItem("nickname") || null,
   setUser: (user) => set({ user }),
@@ -11,43 +11,37 @@ export const useStore = create((set, get) => ({
     set({ nickname });
   },
 
-  // ── Channel ───────────────────────────────────────────
+  // Channel
   currentChannel: localStorage.getItem("currentChannel") || "general",
   setChannel: (channel) => {
     localStorage.setItem("currentChannel", channel);
     set({ currentChannel: channel, posts: [] });
   },
 
-  // ── Posts ─────────────────────────────────────────────
+  //Posts 
   posts: [],
   isLoadingPosts: false,
   setPosts: (posts) => set({ posts }),
   prependPost: (post) => set((s) => ({ posts: [post, ...s.posts] })),
   setLoadingPosts: (v) => set({ isLoadingPosts: v }),
 
-  // ── UI ────────────────────────────────────────────────
+  // UI 
   showNicknameModal: false,
   setShowNicknameModal: (v) => set({ showNicknameModal: v }),
 
   isPosting: false,
   setIsPosting: (v) => set({ isPosting: v }),
 
-  // ── Actions ───────────────────────────────────────────
+  // Actions
   async ensureAuth() {
-    try {
-      let { data, error } = await supabase.auth.getUser();
-      if (data?.user) {
-        set({ user: data.user });
-        return data.user;
-      }
-      const { data: signData, error: signError } = await supabase.auth.signInAnonymously();
-      if (signError) throw signError;
-      set({ user: signData?.user });
-      return signData?.user;
-    } catch (e) {
-      console.error("Auth error:", e);
-      return null;
+    let { data } = await supabase.auth.getUser();
+    if (data?.user) {
+      set({ user: data.user });
+      return data.user;
     }
+    const { data: signData } = await supabase.auth.signInAnonymously();
+    set({ user: signData.user });
+    return signData.user;
   },
 
   async getOrCreateUserRow(uid) {
