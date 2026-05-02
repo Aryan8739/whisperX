@@ -8,46 +8,46 @@ import { NicknameModal } from "@/components/NicknameModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function App() {
-  const ensureAuth = useStore((s) => s.ensureAuth);
-  const getOrCreateUserRow = useStore((s) => s.getOrCreateUserRow);
-  const setNickname = useStore((s) => s.setNickname);
-  const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
-  const loadPosts = useStore((s) => s.loadPosts);
-  const nickname = useStore((s) => s.nickname);
+    const ensureAuth = useStore((s) => s.ensureAuth);
+    const getOrCreateUserRow = useStore((s) => s.getOrCreateUserRow);
+    const setNickname = useStore((s) => s.setNickname);
+    const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
+    const loadPosts = useStore((s) => s.loadPosts);
+    const nickname = useStore((s) => s.nickname);
 
-  useRealtime();
+    useRealtime();
 
-  useEffect(() => {
-    async function init() {
-      const user = await ensureAuth();
-      if (!user) {
-        console.error("Could not authenticate with Supabase. Check connection.");
-        return;
-      }
-      const userRow = await getOrCreateUserRow(user.id);
+    useEffect(() => {
+        async function init() {
+            const user = await ensureAuth();
+            if (!user) {
+                console.error("Could not authenticate with Supabase. Check connection.");
+                return;
+            }
+            const userRow = await getOrCreateUserRow(user.id);
 
-      const savedNick = localStorage.getItem("nickname") || userRow?.nickname;
-      if (savedNick) {
-        setNickname(savedNick);
-      } else {
-        setShowNicknameModal(true);
-      }
+            const savedNick = localStorage.getItem("nickname") || userRow?.nickname;
+            if (savedNick) {
+                setNickname(savedNick);
+            } else {
+                setShowNicknameModal(true);
+            }
 
-      await loadPosts();
-    }
+            await loadPosts();
+        }
 
-    init();
-  }, []);
+        init();
+    }, []);
 
-  return (
-    <>
-      <TerminalBar />
-      <div className="crt" aria-hidden="true" />
-      <ErrorBoundary>
-        <PostFeed />
-      </ErrorBoundary>
-      <TerminalInput />
-      <NicknameModal />
-    </>
-  );
+    return (
+        <>
+            <TerminalBar />
+            <div className="crt" aria-hidden="true" />
+            <ErrorBoundary>
+                <PostFeed />
+            </ErrorBoundary>
+            <TerminalInput />
+            <NicknameModal />
+        </>
+    );
 }

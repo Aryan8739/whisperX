@@ -70,6 +70,7 @@ export const useStore = create((set, get) => ({
       .from("posts")
       .select("*")
       .eq("channel", currentChannel)
+      .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(100);
 
