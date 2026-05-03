@@ -255,6 +255,18 @@ body::before {
     gap: 10px;
 }
 
+.clickable-user {
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: underline transparent;
+}
+
+.clickable-user:hover {
+    color: #fff;
+    text-shadow: 0 0 8px #fff;
+    text-decoration: underline #fff;
+}
+
 /* Post animation */
 @keyframes slideIn {
     from {

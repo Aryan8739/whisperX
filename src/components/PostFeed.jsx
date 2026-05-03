@@ -2,11 +2,17 @@ import { useStore } from "@/store/useStore";
 import { timeAgo } from "@/lib/timeago";
 import { getUserDisplay } from "@/lib/utils";
 
-function Post({ post }) {
+function Post({ post, onUserClick }) {
     return (
         <div className="post">
             <div className="post-header">
-                {getUserDisplay(post.nickname, post.user_id)}@{post.channel} ➤ [{timeAgo(post.created_at)}]
+                <span 
+                    className="clickable-user" 
+                    onClick={() => onUserClick({ uid: post.user_id, nickname: post.nickname })}
+                >
+                    {getUserDisplay(post.nickname, post.user_id)}
+                </span>
+                @{post.channel} ➤ [{timeAgo(post.created_at)}]
             </div>
             <div className="post-text">{post.text_content}</div>
         </div>
@@ -37,10 +43,21 @@ export function PostFeed() {
         );
     }
 
+    const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
+    const currentUser = useStore((s) => s.user);
+
     return (
         <div id="feed">
             {posts.map((p) => (
-                <Post key={p.id} post={p} />
+                <Post 
+                    key={p.id} 
+                    post={p} 
+                    onUserClick={(userObj) => {
+                        if (userObj.uid !== currentUser?.id) {
+                            setActiveDMRecipient(userObj);
+                        }
+                    }} 
+                />
             ))}
         </div>
     );
