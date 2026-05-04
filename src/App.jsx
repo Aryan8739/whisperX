@@ -6,6 +6,7 @@ import { PostFeed } from "@/components/PostFeed";
 import { TerminalInput } from "@/components/TerminalInput";
 import { NicknameModal } from "@/components/NicknameModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SidePanel } from "@/components/SidePanel";
 
 export default function App() {
     const ensureAuth = useStore((s) => s.ensureAuth);
@@ -43,9 +44,14 @@ export default function App() {
         <>
             <TerminalBar />
             <div className="crt" aria-hidden="true" />
-            <ErrorBoundary>
-                <PostFeed />
-            </ErrorBoundary>
+            <div className="main-layout">
+                <div className="main-content">
+                    <ErrorBoundary>
+                        <PostFeed />
+                    </ErrorBoundary>
+                </div>
+                <SidePanel />
+            </div>
             <TerminalInput />
             <NicknameModal />
         </>

@@ -1,11 +1,12 @@
 import { useStore } from "@/store/useStore";
 import { timeAgo } from "@/lib/timeago";
+import { getUserDisplay } from "@/lib/utils";
 
 function Post({ post }) {
     return (
         <div className="post">
             <div className="post-header">
-                {post.nickname || "anon"}@{post.channel} ➤ [{timeAgo(post.created_at)}]
+                {getUserDisplay(post.nickname, post.user_id)}@{post.channel} ➤ [{timeAgo(post.created_at)}]
             </div>
             <div className="post-text">{post.text_content}</div>
         </div>

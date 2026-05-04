@@ -14,9 +14,8 @@ body {
     margin: 0;
     font-family: 'Share Tech Mono', monospace;
     color: var(--neon-green);
-    overflow-x: hidden;
+    overflow: hidden;
     padding-top: 55px;
-    /* Space for glassmorphic top bar */
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -182,6 +181,23 @@ body::before {
     padding-left: 22px;
     /* Slight indent on hover */
     text-shadow: 0 0 8px var(--neon-green);
+}
+
+/* MAIN LAYOUT */
+.main-layout {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+    margin-bottom: 70px; /* Space for terminal input */
+    position: relative;
+    z-index: 10;
+}
+
+.main-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* FEED & POSTS */
@@ -390,4 +406,175 @@ body::before {
 
 .nick-box button:active {
     transform: translateY(0);
+}
+
+/* SIDE PANEL (DMS) */
+.side-panel {
+    width: 350px;
+    background: rgba(5, 15, 10, 0.9);
+    border-left: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 15px rgba(0, 255, 85, 0.05);
+    backdrop-filter: blur(5px);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.side-panel-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 255, 85, 0.05);
+}
+
+.side-panel-header .title {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    text-shadow: 0 0 5px var(--neon-green-glow);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--neon-green);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #fff;
+    text-shadow: 0 0 5px #fff;
+}
+
+.users-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.users-list-title {
+    font-size: 14px;
+    color: var(--neon-green-dim);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.user-item {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background: rgba(0, 255, 85, 0.03);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+}
+
+.user-item:hover {
+    background: rgba(0, 255, 85, 0.1);
+    border-left-color: var(--neon-green);
+    transform: translateX(5px);
+}
+
+.no-users {
+    color: rgba(0, 255, 85, 0.5);
+    font-style: italic;
+    padding: 10px;
+}
+
+/* DM VIEW */
+.dm-view {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.dm-header {
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--neon-green);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 5px;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(0, 255, 85, 0.1);
+}
+
+.dm-header .highlight {
+    color: #fff;
+    text-shadow: 0 0 5px var(--neon-green);
+}
+
+.dm-feed {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column-reverse; /* Assuming posts are ordered desc */
+}
+
+.dm-post {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: rgba(0, 255, 85, 0.05);
+    border-radius: 4px;
+}
+
+.dm-post-header {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--neon-green-dim);
+    margin-bottom: 4px;
+}
+
+.dm-post-text {
+    font-size: 14px;
+    color: #fff;
+    word-wrap: break-word;
+}
+
+.dm-input-form {
+    padding: 15px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dm-prompt {
+    color: var(--neon-green);
+    margin-right: 10px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+}
+
+.dm-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    outline: none;
+}
+
+.dm-input::placeholder {
+    color: rgba(0, 255, 85, 0.3);
 }

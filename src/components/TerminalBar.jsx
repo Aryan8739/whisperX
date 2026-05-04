@@ -10,6 +10,7 @@ export function TerminalBar() {
     const loadPosts = useStore((s) => s.loadPosts);
     const nickname = useStore((s) => s.nickname);
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
+    const toggleSidePanel = useStore((s) => s.toggleSidePanel);
 
     async function handleChannelSwitch(ch) {
         setChannel(ch);
@@ -25,6 +26,12 @@ export function TerminalBar() {
                     <span className="menu-item" onClick={loadPosts}>Home</span>
                     <span className="menu-item" onClick={() => setDropdownOpen((v) => !v)}>
                         Channels ▾
+                    </span>
+                    <span
+                        className="menu-item"
+                        onClick={toggleSidePanel}
+                    >
+                        Messages
                     </span>
                     <span
                         className="menu-item"
