@@ -3,16 +3,23 @@ import { timeAgo } from "@/lib/timeago";
 import { getUserDisplay } from "@/lib/utils";
 
 function Post({ post, onUserClick }) {
+    const isSystem = post.type === "system";
+
     return (
-        <div className="post">
+        <div className={`post ${isSystem ? 'system-post' : ''}`}>
             <div className="post-header">
-                <span 
-                    className="clickable-user" 
-                    onClick={() => onUserClick({ uid: post.user_id, nickname: post.nickname })}
-                >
-                    {getUserDisplay(post.nickname, post.user_id)}
-                </span>
-                @{post.channel} ➤ [{timeAgo(post.created_at)}]
+                {isSystem ? (
+                    <span className="system-tag">[SYSTEM]</span>
+                ) : (
+                    <span 
+                        className="clickable-user" 
+                        onClick={() => onUserClick({ uid: post.user_id, nickname: post.nickname })}
+                    >
+                        {getUserDisplay(post.nickname, post.user_id)}
+                    </span>
+                )}
+                {!isSystem && <>@{post.channel} ➤ </>} 
+                [{timeAgo(post.created_at)}]
             </div>
             <div className="post-text">{post.text_content}</div>
         </div>
@@ -21,11 +28,17 @@ function Post({ post, onUserClick }) {
 
 export function PostFeed() {
     const posts = useStore((s) => s.posts);
+    const systemLogs = useStore((s) => s.systemLogs);
     const isLoading = useStore((s) => s.isLoadingPosts);
     const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
     const currentUser = useStore((s) => s.user);
 
-    if (isLoading) {
+    // Merge and sort by time
+    const allMessages = [...posts, ...systemLogs].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+
+    if (isLoading && !posts.length) {
         return (
             <div id="feed">
                 <div className="post">
@@ -35,7 +48,7 @@ export function PostFeed() {
         );
     }
 
-    if (!posts.length) {
+    if (!allMessages.length) {
         return (
             <div id="feed">
                 <div className="post">
@@ -47,7 +60,7 @@ export function PostFeed() {
 
     return (
         <div id="feed">
-            {posts.map((p) => (
+            {allMessages.map((p) => (
                 <Post 
                     key={p.id} 
                     post={p} 
