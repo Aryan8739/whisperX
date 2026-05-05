@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { timeAgo } from "@/lib/timeago";
 import { getUserDisplay } from "@/lib/utils";
+import { playClick, playBlip } from "@/lib/audio";
 
 export function SidePanel() {
     const isSidePanelOpen = useStore((s) => s.isSidePanelOpen);
@@ -135,6 +136,11 @@ export function SidePanel() {
                             placeholder="Type a message..."
                             value={dmInput}
                             onChange={(e) => setDmInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key.length === 1 || e.key === "Backspace" || e.key === "Enter") {
+                                    playClick();
+                                }
+                            }}
                         />
                     </form>
                 </div>

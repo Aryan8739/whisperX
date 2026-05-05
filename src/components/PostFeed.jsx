@@ -33,7 +33,6 @@ export function PostFeed() {
     const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
     const currentUser = useStore((s) => s.user);
 
-    // Merge and sort by time
     const allMessages = [...posts, ...systemLogs].sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
     );

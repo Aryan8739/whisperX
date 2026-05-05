@@ -13,7 +13,6 @@ export function useRealtime() {
     const prependDMPost = useStore((s) => s.prependDMPost);
     const dmChannelRef = useRef(null);
 
-    // Channel Subscription
     useEffect(() => {
         if (channelRef.current) {
             supabase.removeChannel(channelRef.current);
@@ -43,7 +42,6 @@ export function useRealtime() {
         };
     }, [currentChannel, prependPost]);
 
-    // DM Subscription
     useEffect(() => {
         if (dmChannelRef.current) {
             supabase.removeChannel(dmChannelRef.current);
@@ -78,7 +76,6 @@ export function useRealtime() {
         };
     }, [user, activeDMRecipient, prependDMPost]);
 
-    // Presence Subscription
     const setOnlineUsers = useStore((s) => s.setOnlineUsers);
     const nickname = useStore((s) => s.nickname);
 

@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { supabase } from "@/lib/supabase";
 
 export const useStore = create((set, get) => ({
-  // Auth
   user: null,
   nickname: localStorage.getItem("nickname") || null,
   theme: localStorage.getItem("theme") || "green",
@@ -15,26 +14,19 @@ export const useStore = create((set, get) => ({
     localStorage.setItem("theme", theme);
     set({ theme });
   },
-
-  // Channel
   currentChannel: localStorage.getItem("currentChannel") || "general",
   setChannel: (channel) => {
     localStorage.setItem("currentChannel", channel);
     set({ currentChannel: channel, posts: [] });
   },
-
-  // Presence
   onlineUsers: {},
   setOnlineUsers: (onlineUsers) => set({ onlineUsers }),
 
-  //Posts 
   posts: [],
   isLoadingPosts: false,
   setPosts: (posts) => set({ posts }),
   prependPost: (post) => set((s) => ({ posts: [post, ...s.posts] })),
   setLoadingPosts: (v) => set({ isLoadingPosts: v }),
-
-  // UI 
   showNicknameModal: false,
   setShowNicknameModal: (v) => set({ showNicknameModal: v }),
 
@@ -43,8 +35,6 @@ export const useStore = create((set, get) => ({
 
   isPosting: false,
   setIsPosting: (v) => set({ isPosting: v }),
-
-  // DM State
   users: [],
   recentConversations: [],
   activeDMRecipient: null,
@@ -62,8 +52,6 @@ export const useStore = create((set, get) => ({
   setDMPosts: (dmPosts) => set({ dmPosts }),
   prependDMPost: (post) => set((s) => ({ dmPosts: [post, ...s.dmPosts] })),
   toggleSidePanel: () => set((s) => ({ isSidePanelOpen: !s.isSidePanelOpen })),
-
-  // System & Local Actions
   addSystemMessage: (text) => {
     const newMessage = {
       id: `sys-${Date.now()}`,
@@ -75,8 +63,6 @@ export const useStore = create((set, get) => ({
     set((s) => ({ systemLogs: [...s.systemLogs, newMessage] }));
   },
   clearLocalLogs: () => set({ systemLogs: [], posts: [] }),
-
-  // Actions
   async ensureAuth() {
     let { data } = await supabase.auth.getUser();
     if (data?.user) {
@@ -150,7 +136,6 @@ export const useStore = create((set, get) => ({
 
     set({ isLoadingDMPosts: true });
     
-    // Ensure consistent channel name
     const ids = [user.id, activeDMRecipient.uid].sort();
     const dmChannel = `dm_${ids[0]}_${ids[1]}`;
 
@@ -175,7 +160,6 @@ export const useStore = create((set, get) => ({
     if (!user) return;
 
     // Fetch latest messages from any DM channel containing the user ID
-    // Note: This is an approximation. In a real app, you'd have a 'conversations' table.
     const { data, error } = await supabase
       .from("posts")
       .select("channel, created_at, user_id, nickname")
@@ -195,9 +179,6 @@ export const useStore = create((set, get) => ({
       if (otherId && !seenOtherIds.has(otherId)) {
         seenOtherIds.add(otherId);
         
-        // We need the full user object for the other person.
-        // We'll look for them in the already loaded 'users' list 
-        // or fetch if needed, but for now let's assume we have them or will get them.
         recent.push({
           uid: otherId,
           lastActivity: post.created_at,
@@ -207,7 +188,6 @@ export const useStore = create((set, get) => ({
       }
     }
 
-    // Now resolve nicknames from the 'users' table for all 'otherId's
     const { data: userDetails } = await supabase
       .from("users")
       .select("*")

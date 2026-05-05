@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { playClick, playError, playBlip } from "@/lib/audio";
 
@@ -19,8 +19,28 @@ export function TerminalInput() {
     const user = useStore((s) => s.user);
     const setTheme = useStore((s) => s.setTheme);
 
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (!isPosting) {
+            inputRef.current?.focus();
+        }
+    }, [isPosting]);
+
+    useEffect(() => {
+        const handleGlobalClick = (e) => {
+            const isModalOpen = document.querySelector('.nick-modal');
+            const isInSidePanel = e.target.closest('.side-panel');
+            
+            if (!isModalOpen && !isInSidePanel) {
+                inputRef.current?.focus();
+            }
+        };
+        document.addEventListener('click', handleGlobalClick);
+        return () => document.removeEventListener('click', handleGlobalClick);
+    }, []);
+
     async function handleKeyDown(e) {
-        // Play mechanical click on every keypress
         if (e.key.length === 1 || e.key === "Backspace" || e.key === "Enter") {
             playClick();
         }
@@ -98,6 +118,7 @@ export function TerminalInput() {
             <span id="prompt">{nickname || "anon"}@{currentChannel}:~$</span>
             <input
                 id="terminal-input"
+                ref={inputRef}
                 type="text"
                 autoComplete="off"
                 autoFocus
