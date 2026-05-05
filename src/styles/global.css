@@ -231,9 +231,10 @@ body::before {
     display: flex;
     flex-grow: 1;
     overflow: hidden;
-    margin-bottom: 70px;
+    margin-bottom: 0;
     position: relative;
     z-index: 10;
+    height: 0; /* Important: allow flex child to shrink/grow and scroll */
 }
 
 .main-content {
@@ -241,6 +242,7 @@ body::before {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 100%;
 }
 
 /* FEED & POSTS */

@@ -35,21 +35,26 @@ export function PostFeed() {
     const currentUser = useStore((s) => s.user);
     const typingUsers = useStore((s) => s.typingUsers);
     const onlineUsers = useStore((s) => s.onlineUsers);
-    const feedRef = useRef(null);
-
+    const messagesEndRef = useRef(null);
     const setActiveOverlay = useStore((s) => s.setActiveOverlay);
     const setSelectedProfileUser = useStore((s) => s.setSelectedProfileUser);
 
-    const allMessages = [...posts, ...systemLogs].sort(
-        (a, b) => new Date(a.created_at) - new Date(b.created_at)
-    );
+    const allMessages = [...(posts || []), ...(systemLogs || [])].sort((a, b) => {
+        const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return timeA - timeB;
+    });
 
     const otherTyping = Object.keys(typingUsers).filter(uid => uid !== currentUser?.id);
 
+    const scrollToBottom = () => {
+        requestAnimationFrame(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        });
+    };
+
     useEffect(() => {
-        if (feedRef.current) {
-            feedRef.current.scrollTop = feedRef.current.scrollHeight;
-        }
+        scrollToBottom();
     }, [allMessages, otherTyping]);
 
     if (isLoading && !posts.length) {
@@ -78,7 +83,7 @@ export function PostFeed() {
     };
 
     return (
-        <div id="feed" ref={feedRef}>
+        <div id="feed">
             {allMessages.map((p) => (
                 <Post 
                     key={p.id} 
@@ -91,6 +96,7 @@ export function PostFeed() {
                     {otherTyping.map(uid => onlineUsers[uid]?.nickname || "anon").join(", ")} {otherTyping.length === 1 ? "is" : "are"} typing...
                 </div>
             )}
+            <div ref={messagesEndRef} style={{ height: 1, marginTop: -1 }} />
         </div>
     );
 }
