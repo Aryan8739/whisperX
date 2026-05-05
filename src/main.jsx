@@ -9,7 +9,10 @@ window.addEventListener("error", (e) => {
 
 window.addEventListener("unhandledrejection", (e) => {
     const reason = e.reason?.message || e.reason || "";
-    if (reason.toString().includes("auth-token") && reason.toString().includes("stole it")) return;
+    const str = reason.toString().toLowerCase();
+    
+    // Filter out harmless Supabase lock errors often caused by StrictMode or multi-tab usage
+    if (str.includes("auth-token") && (str.includes("stole it") || str.includes("steal") || str.includes("lock broken"))) return;
 
     document.body.innerHTML += `<div style="color:red; background:white; z-index:9999; position:absolute; top:0;">Promise Error: ${reason}</div>`;
 });

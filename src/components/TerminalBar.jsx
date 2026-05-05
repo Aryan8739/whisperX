@@ -7,7 +7,7 @@ export function TerminalBar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const channelsBtnRef = useRef(null);
-    
+
     const currentChannel = useStore((s) => s.currentChannel);
     const setChannel = useStore((s) => s.setChannel);
     const loadPosts = useStore((s) => s.loadPosts);
@@ -20,7 +20,7 @@ export function TerminalBar() {
     useEffect(() => {
         function handleClickOutside(event) {
             if (
-                dropdownRef.current && 
+                dropdownRef.current &&
                 !dropdownRef.current.contains(event.target) &&
                 channelsBtnRef.current &&
                 !channelsBtnRef.current.contains(event.target)
@@ -50,11 +50,11 @@ export function TerminalBar() {
     return (
         <>
             <div className="terminal-bar">
-                <div className="title">CAMPUS WHISPER — CRT TERMINAL</div>
+                <div className="title">WHISPERX — CRT TERMINAL</div>
                 <div className="menu">
                     <span className="menu-item" onClick={loadPosts}>Home</span>
-                    <span 
-                        className="menu-item" 
+                    <span
+                        className="menu-item"
                         ref={channelsBtnRef}
                         onClick={() => setDropdownOpen((v) => !v)}
                     >
