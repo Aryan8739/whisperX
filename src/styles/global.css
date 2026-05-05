@@ -755,3 +755,31 @@ body::before {
     margin: 5px 0;
     text-shadow: 0 0 5px var(--neon-color);
 }
+
+.search-bar {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--glass-border);
+    gap: 10px;
+}
+
+.search-icon {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.search-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
