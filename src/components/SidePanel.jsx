@@ -8,6 +8,8 @@ export function SidePanel() {
     const toggleSidePanel = useStore((s) => s.toggleSidePanel);
     const users = useStore((s) => s.users);
     const loadUsers = useStore((s) => s.loadUsers);
+    const recentConversations = useStore((s) => s.recentConversations);
+    const loadRecentConversations = useStore((s) => s.loadRecentConversations);
     const activeDMRecipient = useStore((s) => s.activeDMRecipient);
     const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
     const dmPosts = useStore((s) => s.dmPosts);
@@ -17,12 +19,16 @@ export function SidePanel() {
     const onlineUsers = useStore((s) => s.onlineUsers);
 
     const [dmInput, setDmInput] = useState("");
+    const [view, setView] = useState("recent"); // 'recent' or 'new'
 
     useEffect(() => {
         if (isSidePanelOpen) {
-            loadUsers();
+            loadRecentConversations();
+            if (view === "new") {
+                loadUsers();
+            }
         }
-    }, [isSidePanelOpen, loadUsers]);
+    }, [isSidePanelOpen, loadRecentConversations, loadUsers, view]);
 
     if (!isSidePanelOpen) return null;
 
@@ -31,7 +37,13 @@ export function SidePanel() {
         if (dmInput.trim()) {
             postDM(dmInput);
             setDmInput("");
+            setView("recent");
         }
+    };
+
+    const handleSelectUser = (u) => {
+        setActiveDMRecipient(u);
+        setView("recent");
     };
 
     return (
@@ -43,17 +55,50 @@ export function SidePanel() {
             
             {!activeDMRecipient ? (
                 <div className="users-list">
-                    <div className="users-list-title">SELECT A USER</div>
-                    {users.filter(u => u.uid !== currentUser?.id).map((u) => (
-                        <div 
-                            key={u.uid} 
-                            className="user-item"
-                            onClick={() => setActiveDMRecipient(u)}
-                        >
-                            {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
-                        </div>
-                    ))}
-                    {users.length <= 1 && <div className="no-users">No other users online.</div>}
+                    {view === "recent" ? (
+                        <>
+                            <div className="users-list-title">RECENT CONVERSATIONS</div>
+                            {recentConversations.length > 0 ? (
+                                recentConversations.map((u) => (
+                                    <div 
+                                        key={u.uid} 
+                                        className="user-item"
+                                        onClick={() => handleSelectUser(u)}
+                                    >
+                                        <div className="user-item-main">
+                                            {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
+                                        </div>
+                                        <div className="user-item-time">{timeAgo(u.lastActivity)}</div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="no-users">No recent messages.</div>
+                            )}
+                            <button 
+                                className="new-convo-btn"
+                                onClick={() => setView("new")}
+                            >
+                                + NEW CONVERSATION
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <div className="users-list-title">
+                                <button className="back-btn-small" onClick={() => setView("recent")}>&lt; BACK</button>
+                                SELECT A USER
+                            </div>
+                            {users.filter(u => u.uid !== currentUser?.id).map((u) => (
+                                <div 
+                                    key={u.uid} 
+                                    className="user-item"
+                                    onClick={() => handleSelectUser(u)}
+                                >
+                                    {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
+                                </div>
+                            ))}
+                            {users.length <= 1 && <div className="no-users">No other users online.</div>}
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="dm-view">

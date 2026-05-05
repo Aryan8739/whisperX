@@ -38,6 +38,7 @@ export const useStore = create((set, get) => ({
 
   // DM State
   users: [],
+  recentConversations: [],
   activeDMRecipient: null,
   dmPosts: [],
   isLoadingDMPosts: false,
@@ -139,8 +140,64 @@ export const useStore = create((set, get) => ({
       .order("created_at", { ascending: false })
       .limit(100);
 
-    if (!error) set({ dmPosts: data });
+    if (!error) {
+      set({ dmPosts: data });
+      // Refresh recent conversations when a DM is loaded/sent
+      get().loadRecentConversations();
+    }
     set({ isLoadingDMPosts: false });
+  },
+
+  async loadRecentConversations() {
+    const { user } = get();
+    if (!user) return;
+
+    // Fetch latest messages from any DM channel containing the user ID
+    // Note: This is an approximation. In a real app, you'd have a 'conversations' table.
+    const { data, error } = await supabase
+      .from("posts")
+      .select("channel, created_at, user_id, nickname")
+      .filter("channel", "ilike", "dm_%")
+      .or(`channel.ilike.%${user.id}%`)
+      .order("created_at", { ascending: false });
+
+    if (error || !data) return;
+
+    const recent = [];
+    const seenOtherIds = new Set();
+
+    for (const post of data) {
+      const ids = post.channel.replace("dm_", "").split("_");
+      const otherId = ids.find(id => id !== user.id);
+      
+      if (otherId && !seenOtherIds.has(otherId)) {
+        seenOtherIds.add(otherId);
+        
+        // We need the full user object for the other person.
+        // We'll look for them in the already loaded 'users' list 
+        // or fetch if needed, but for now let's assume we have them or will get them.
+        recent.push({
+          uid: otherId,
+          lastActivity: post.created_at,
+          // Temporary nickname from post if they sent it, otherwise we'll resolve it later
+          nickname: post.user_id === otherId ? post.nickname : null 
+        });
+      }
+    }
+
+    // Now resolve nicknames from the 'users' table for all 'otherId's
+    const { data: userDetails } = await supabase
+      .from("users")
+      .select("*")
+      .in("uid", Array.from(seenOtherIds));
+
+    if (userDetails) {
+      const merged = recent.map(r => {
+        const detail = userDetails.find(u => u.uid === r.uid);
+        return detail ? { ...detail, lastActivity: r.lastActivity } : r;
+      });
+      set({ recentConversations: merged });
+    }
   },
 
   async postDM(text) {
@@ -162,6 +219,7 @@ export const useStore = create((set, get) => ({
       channel: dmChannel,
     });
     set({ isPosting: false });
+    get().loadRecentConversations();
   },
 
   async saveNickname(nick) {

@@ -484,6 +484,45 @@ body::before {
     cursor: pointer;
     transition: all 0.2s;
     border-left: 2px solid transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-item-time {
+    font-size: 0.75em;
+    color: var(--neon-green-dim);
+}
+
+.new-convo-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(0, 255, 85, 0.1);
+    border: 1px dashed var(--glass-border);
+    color: var(--neon-green);
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.new-convo-btn:hover {
+    background: rgba(0, 255, 85, 0.2);
+    border-color: var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-green);
+}
+
+.back-btn-small {
+    background: none;
+    border: none;
+    color: var(--neon-green-dim);
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.back-btn-small:hover {
+    color: var(--neon-green);
 }
 
 .user-item:hover {

@@ -8,7 +8,10 @@ window.addEventListener("error", (e) => {
 });
 
 window.addEventListener("unhandledrejection", (e) => {
-    document.body.innerHTML += `<div style="color:red; background:white; z-index:9999; position:absolute; top:0;">Promise Error: ${e.reason?.message || e.reason}</div>`;
+    const reason = e.reason?.message || e.reason || "";
+    if (reason.toString().includes("auth-token") && reason.toString().includes("stole it")) return;
+
+    document.body.innerHTML += `<div style="color:red; background:white; z-index:9999; position:absolute; top:0;">Promise Error: ${reason}</div>`;
 });
 
 try {
