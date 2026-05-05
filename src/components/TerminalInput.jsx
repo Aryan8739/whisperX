@@ -44,16 +44,29 @@ export function TerminalInput() {
     }, [isPosting]);
 
     useEffect(() => {
-        const handleGlobalClick = (e) => {
-            const isModalOpen = document.querySelector('.nick-modal');
-            const isInSidePanel = e.target.closest('.side-panel');
+        const handleGlobalFocus = (e) => {
+            // Check if user is already interacting with another input or modal
+            const activeEl = document.activeElement;
+            const isInputFocused = activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA";
+            const isModalOpen = document.querySelector('.nick-modal') || document.querySelector('.settings-modal');
+            const isInSidePanel = e.target?.closest?.('.side-panel');
             
-            if (!isModalOpen && !isInSidePanel) {
+            if (isModalOpen || isInSidePanel || isInputFocused) return;
+            
+            inputRef.current?.focus();
+        };
+
+        document.addEventListener('click', handleGlobalFocus);
+        window.addEventListener('resize', () => {
+            // Re-focus after resize only if we were already focusing the terminal
+            if (document.activeElement === inputRef.current) {
                 inputRef.current?.focus();
             }
+        });
+        
+        return () => {
+            document.removeEventListener('click', handleGlobalFocus);
         };
-        document.addEventListener('click', handleGlobalClick);
-        return () => document.removeEventListener('click', handleGlobalClick);
     }, []);
 
     async function handleKeyDown(e) {

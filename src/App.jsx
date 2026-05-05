@@ -27,6 +27,8 @@ export default function App() {
     const theme = useStore((s) => s.theme);
     const [isBooting, setIsBooting] = useState(true);
 
+    const isSidePanelOpen = useStore((s) => s.isSidePanelOpen);
+
     useRealtime();
 
     useEffect(() => {

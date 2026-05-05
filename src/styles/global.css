@@ -10,6 +10,7 @@
     --text-main: #ccffdd;
     --system-color: #ffaa00;
     --text-glow: 0 0 5px rgba(0, 255, 85, 0.5);
+    --terminal-height: 70px;
 }
 
 [data-theme="orange"] {
@@ -478,6 +479,7 @@ body::before {
     backdrop-filter: blur(5px);
     overflow: hidden;
     transition: transform 0.3s ease;
+    bottom: var(--terminal-height);
 }
 
 .side-panel-header {
@@ -850,9 +852,12 @@ body::before {
 
     .side-panel {
         position: fixed;
-        inset: 0;
+        top: 50px;
+        left: 0;
+        right: 0;
+        bottom: 85px; /* Mobile terminal is taller */
         width: 100% !important;
-        height: 100%;
+        height: auto;
         z-index: 10000;
         border-left: none;
         transform: translateX(100%);
