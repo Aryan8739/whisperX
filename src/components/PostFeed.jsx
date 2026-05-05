@@ -48,17 +48,12 @@ export function PostFeed() {
     const otherTyping = Object.keys(typingUsers).filter(uid => uid !== currentUser?.id);
 
     const messageCount = allMessages.length;
-    const isInitialLoad = useRef(true);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
-        if (isInitialLoad.current && messageCount > 0) {
-            isInitialLoad.current = false;
-            return;
-        }
         scrollToBottom();
     }, [messageCount, otherTyping.length]);
 
