@@ -23,12 +23,13 @@ WhisperX is a high-immersion, real-time messaging platform designed with a retro
 
 ## 🎨 Aesthetic Showcase
 
-WhisperX supports five distinct visual modes:
-- **Classic Green**: The original 80s phosphor green.
-- **Cyberpunk**: Neon pink and cyan-blue "Night City" vibe.
-- **Orange**: Warm, high-contrast amber glow.
-- **Red**: Aggressive tactical red terminal.
-- **Star Wars**: Iconic yellow-on-black aesthetic with rebellion-blue accents.
+| Classic Green (Default) | Star Wars Theme |
+| :---: | :---: |
+| ![Green Terminal](public/main_green.png) | ![Star Wars Terminal](public/theme_starwars.png) |
+
+| Orange Phosphor | Settings & Commands |
+| :---: | :---: |
+| ![Orange Terminal](public/theme_orange.png) | ![Settings UI](public/settings_ui.png) |
 
 ---
 
