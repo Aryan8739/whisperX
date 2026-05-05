@@ -19,6 +19,8 @@ export function TerminalInput() {
     const user = useStore((s) => s.user);
     const setTheme = useStore((s) => s.setTheme);
 
+    const [history, setHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -45,9 +47,32 @@ export function TerminalInput() {
             playClick();
         }
 
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (history.length > 0) {
+                const nextIndex = Math.min(historyIndex + 1, history.length - 1);
+                setHistoryIndex(nextIndex);
+                setText(history[history.length - 1 - nextIndex]);
+            }
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                const nextIndex = historyIndex - 1;
+                setHistoryIndex(nextIndex);
+                setText(history[history.length - 1 - nextIndex]);
+            } else {
+                setHistoryIndex(-1);
+                setText("");
+            }
+        }
+
         if (e.key === "Enter") {
             const trimmed = text.trim();
             if (!trimmed || isPosting) return;
+
+            // Save to history
+            setHistory(prev => [trimmed, ...prev.filter(h => h !== trimmed)].slice(0, 50));
+            setHistoryIndex(-1);
 
             if (trimmed.startsWith("/")) {
                 const [cmd, ...args] = trimmed.slice(1).split(" ");

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { useRealtime } from "@/hooks/useRealtime";
 import { playStartup } from "@/lib/audio";
@@ -18,6 +18,7 @@ export default function App() {
     const loadPosts = useStore((s) => s.loadPosts);
     const nickname = useStore((s) => s.nickname);
     const theme = useStore((s) => s.theme);
+    const [isBooting, setIsBooting] = useState(true);
 
     useRealtime();
 
@@ -28,25 +29,35 @@ export default function App() {
     useEffect(() => {
         async function init() {
             const user = await ensureAuth();
-            if (!user) {
-                console.error("Could not authenticate with Supabase. Check connection.");
-                return;
-            }
-            const userRow = await getOrCreateUserRow(user.id);
+            if (!user) return;
 
+            const userRow = await getOrCreateUserRow(user.id);
             const savedNick = localStorage.getItem("nickname") || userRow?.nickname;
-            if (savedNick) {
-                setNickname(savedNick);
-            } else {
-                setShowNicknameModal(true);
-            }
+            if (savedNick) setNickname(savedNick);
+            else setShowNicknameModal(true);
 
             await loadPosts();
             playStartup();
+            
+            setTimeout(() => setIsBooting(false), 2000);
         }
-
         init();
     }, []);
+
+    if (isBooting) {
+        return (
+            <div className="boot-screen">
+                <div className="crt" />
+                <div className="boot-text">
+                    <p>WHISPER-X v2.0.0</p>
+                    <p>SYSTEM INITIALIZING...</p>
+                    <p>MEM CHECK: 640KB OK</p>
+                    <p>LINKING TO SUPABASE CLOUD...</p>
+                    <p className="blink">READY_</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>

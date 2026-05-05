@@ -731,3 +731,23 @@ body::before {
 .theme-btn.active {
     box-shadow: 0 0 15px var(--neon-glow);
 }
+.boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.boot-text {
+    max-width: 400px;
+    color: var(--neon-color);
+}
+
+.boot-text p {
+    margin: 5px 0;
+    text-shadow: 0 0 5px var(--neon-color);
+}
