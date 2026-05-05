@@ -179,8 +179,9 @@ export function TerminalInput() {
                 return;
             }
 
+            const msg = trimmed;
             setText("");
-            await postWhisper(trimmed);
+            await postWhisper(msg);
         }
     }
 
