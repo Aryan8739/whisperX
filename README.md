@@ -23,13 +23,13 @@ WhisperX is a high-immersion, real-time messaging platform designed with a retro
 
 ## 🎨 Aesthetic Showcase
 
-| Classic Green (Default) | Star Wars Theme |
+| Main Dashboard (Purple) | Direct Messaging |
 | :---: | :---: |
-| ![Green Terminal](public/main_green.png) | ![Star Wars Terminal](public/theme_starwars.png) |
+| ![Main Purple](public/main_purple.png) | ![Direct Messages](public/direct_messages.png) |
 
-| Orange Phosphor | Settings & Commands |
+| Red Tactical Theme | Settings & Commands |
 | :---: | :---: |
-| ![Orange Terminal](public/theme_orange.png) | ![Settings UI](public/settings_ui.png) |
+| ![Theme Red](public/theme_red.png) | ![Settings UI](public/settings_ui.png) |
 
 ---
 
