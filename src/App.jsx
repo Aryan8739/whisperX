@@ -11,7 +11,6 @@ import { SidePanel } from "@/components/SidePanel";
 import { SettingsModal } from "@/components/SettingsModal";
 import { MatrixEffect } from "@/components/MatrixEffect";
 import { SnakeGame } from "@/components/SnakeGame";
-import { ProfileCard } from "@/components/ProfileCard";
 
 export default function App() {
     const ensureAuth = useStore((s) => s.ensureAuth);
@@ -89,13 +88,6 @@ export default function App() {
 
             {activeOverlay === "matrix" && <MatrixEffect onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === "snake" && <SnakeGame onClose={() => setActiveOverlay(null)} />}
-            {activeOverlay === "profile" && (
-                <ProfileCard 
-                    user={selectedProfileUser} 
-                    onlineData={onlineUsers[selectedProfileUser?.uid]} 
-                    onClose={() => setActiveOverlay(null)} 
-                />
-            )}
         </>
     );
 }

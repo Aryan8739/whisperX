@@ -83,8 +83,7 @@ export function PostFeed() {
     }
 
     const handleUserClick = (userObj) => {
-        setSelectedProfileUser(userObj);
-        setActiveOverlay("profile");
+        setActiveDMRecipient(userObj);
     };
 
     return (

@@ -32,7 +32,7 @@ export function SidePanel() {
         }
     }, [isSidePanelOpen, loadRecentConversations, loadUsers, view]);
 
-    if (!isSidePanelOpen) return null;
+    // Don't return null here, let CSS handle the visibility for transitions
 
     const handleSend = (e) => {
         e.preventDefault();
@@ -49,7 +49,7 @@ export function SidePanel() {
     };
 
     return (
-        <div className="side-panel">
+        <div className={`side-panel ${isSidePanelOpen ? 'side-panel-open' : ''}`}>
             <div className="side-panel-header">
                 <div className="title">DIRECT MESSAGES</div>
                 <button className="close-btn" onClick={toggleSidePanel}>[X]</button>
