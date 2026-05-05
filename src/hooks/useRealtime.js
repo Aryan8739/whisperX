@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useStore } from "@/store/useStore";
+import { playBlip } from "@/lib/audio";
 
 export function useRealtime() {
     const currentChannel = useStore((s) => s.currentChannel);
@@ -28,7 +29,10 @@ export function useRealtime() {
                     table: "posts",
                     filter: `channel=eq.${currentChannel}`,
                 },
-                (payload) => prependPost(payload.new)
+                (payload) => {
+                    prependPost(payload.new);
+                    if (payload.new.user_id !== user?.id) playBlip();
+                }
             )
             .subscribe();
 
@@ -60,7 +64,10 @@ export function useRealtime() {
                     table: "posts",
                     filter: `channel=eq.${dmChannel}`,
                 },
-                (payload) => prependDMPost(payload.new)
+                (payload) => {
+                    prependDMPost(payload.new);
+                    if (payload.new.user_id !== user?.id) playBlip();
+                }
             )
             .subscribe();
 

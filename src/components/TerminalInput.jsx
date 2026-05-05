@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
+import { playClick, playError, playBlip } from "@/lib/audio";
 
 export function TerminalInput() {
     const [text, setText] = useState("");
@@ -19,6 +20,11 @@ export function TerminalInput() {
     const setTheme = useStore((s) => s.setTheme);
 
     async function handleKeyDown(e) {
+        // Play mechanical click on every keypress
+        if (e.key.length === 1 || e.key === "Backspace" || e.key === "Enter") {
+            playClick();
+        }
+
         if (e.key === "Enter") {
             const trimmed = text.trim();
             if (!trimmed || isPosting) return;
@@ -30,14 +36,21 @@ export function TerminalInput() {
                 switch (cmd) {
                     case "nick":
                         if (arg) await setNickname(arg);
-                        else addSystemMessage("Usage: /nick <new_nickname>");
+                        else {
+                            addSystemMessage("Usage: /nick <new_nickname>");
+                            playError();
+                        }
                         break;
                     case "join":
                         if (arg) {
                             setChannel(arg);
                             await loadPosts();
                             addSystemMessage(`Switched to channel: #${arg}`);
-                        } else addSystemMessage("Usage: /join <channel_name>");
+                            playBlip();
+                        } else {
+                            addSystemMessage("Usage: /join <channel_name>");
+                            playError();
+                        }
                         break;
                     case "help":
                         addSystemMessage("AVAILABLE COMMANDS:\n/nick <name> - Change nickname\n/join <channel> - Switch channel\n/clear - Wipe terminal screen\n/whoami - Show your user info\n/users - List active users\n/status <msg> - Set activity status\n/theme <name> - Switch terminal theme (green, cyberpunk, orange, red, starwars)");
@@ -61,12 +74,15 @@ export function TerminalInput() {
                         if (validThemes.includes(arg.toLowerCase())) {
                             setTheme(arg.toLowerCase());
                             addSystemMessage(`Theme updated to: ${arg}`);
+                            playBlip();
                         } else {
                             addSystemMessage(`Invalid theme. Available: ${validThemes.join(", ")}`);
+                            playError();
                         }
                         break;
                     default:
                         addSystemMessage(`Unknown command: ${cmd}. Type /help for assistance.`);
+                        playError();
                 }
                 setText("");
                 return;

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { useRealtime } from "@/hooks/useRealtime";
+import { playStartup } from "@/lib/audio";
 import { TerminalBar } from "@/components/TerminalBar";
 import { PostFeed } from "@/components/PostFeed";
 import { TerminalInput } from "@/components/TerminalInput";
@@ -41,6 +42,7 @@ export default function App() {
             }
 
             await loadPosts();
+            playStartup();
         }
 
         init();
