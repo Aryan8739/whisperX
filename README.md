@@ -11,16 +11,24 @@ WhisperX is a high-immersion, real-time messaging platform designed with a retro
 ## ✨ Key Features
 
 - **Authentic CRT Aesthetic**: Complete with scanlines, screen curvature, vignette, and subtle phosphor flickering.
+- **Dynamic Theming Engine**: Switch between multiple aesthetics instantly via Settings or `/theme` command.
+- **Synthetic Audio Engine**: Low-latency mechanical keyboard sounds and notification blips generated via Web Audio API.
+- **Always-Active Input**: Advanced focus management keeps the terminal ready to type at all times.
+- **Clean Terminal Feed**: Modern, spacious layout without distracting block backgrounds.
 - **Real-time Global Feed**: Instant message delivery across all users using Supabase Realtime.
-- **Direct Messaging (DM)**: Private, encrypted-style communication between users with a "terminal-over-wire" feel.
-- **Presence Tracking**: Live online status indicators (🟢/⚪) and channel-specific user counts.
-- **Dynamic Theming Engine**: Switch between multiple aesthetics instantly:
-  - `Classic Green` (Default)
-  - `Cyberpunk` (Pink/Cyan)
-  - `Orange` (Warm Phosphor)
-  - `Red` (Tactical)
-  - `Star Wars` (Yellow/Black)
-- **Interactive Slash Commands**: A fully functional CLI experience for navigating and customizing the app.
+- **Direct Messaging (DM)**: Private, encrypted-style communication with integrated sound feedback.
+- **Presence Tracking**: Live online status indicators and active channel counts.
+
+---
+
+## 🎨 Aesthetic Showcase
+
+WhisperX supports five distinct visual modes:
+- **Classic Green**: The original 80s phosphor green.
+- **Cyberpunk**: Neon pink and cyan-blue "Night City" vibe.
+- **Orange**: Warm, high-contrast amber glow.
+- **Red**: Aggressive tactical red terminal.
+- **Star Wars**: Iconic yellow-on-black aesthetic with rebellion-blue accents.
 
 ---
 
@@ -31,11 +39,11 @@ WhisperX is built to be used from the keyboard. Type `/help` in the terminal to 
 | Command | Description |
 | :--- | :--- |
 | `/nick <name>` | Change your display nickname |
-| `/join <channel>` | Switch to a different chat channel (general, tech, events, etc.) |
-| `/theme <name>` | Switch aesthetics (green, orange, red, cyberpunk, starwars) |
+| `/join <channel>` | Switch to a different chat channel |
+| `/theme <name>` | Switch aesthetics (green, cyberpunk, orange, red, starwars) |
 | `/status <msg>` | Set a custom activity status message |
-| `/clear` | Wipe your local terminal screen for a fresh start |
-| `/whoami` | Display your user ID and authentication details |
+| `/clear` | Wipe your local terminal screen |
+| `/whoami` | Display your user ID and auth details |
 | `/users` | List all active users currently online |
 
 ---
@@ -43,69 +51,45 @@ WhisperX is built to be used from the keyboard. Type `/help` in the terminal to 
 ## 🛠️ Tech Stack
 
 - **Frontend**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
-- **Styling**: Vanilla CSS with CSS Variables for the dynamic theme engine.
+- **Styling**: Vanilla CSS (Themeable Variables)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Backend**: [Supabase](https://supabase.com/) (Auth, Database, Realtime)
-- **Fonts**: Share Tech Mono & VT323 (Google Fonts)
+- **Audio**: Web Audio API (Custom Synthesis)
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js (v18+)
-- A Supabase Project (URL and Anon Key)
-
-### Installation
-
-1. **Clone the repository**
+1. **Clone & Install**
    ```bash
    git clone https://github.com/yourusername/whisperx.git
    cd whisperx
-   ```
-
-2. **Install dependencies**
-   ```bash
    npm install
    ```
 
-3. **Configure Environment Variables**
-   Create a `.env` file in the root and add your Supabase credentials:
+2. **Environment Setup**
+   Add your Supabase credentials to a `.env` file:
    ```env
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-4. **Run the Development Server**
+3. **Launch**
    ```bash
    npm run dev
    ```
 
 ---
 
-## 📜 Database Schema
+## 🗺️ Future Roadmap
 
-WhisperX uses a lightweight but robust schema:
-- `users`: Tracks `uid`, `nickname`, `status_message`, and `last_seen`.
-- `posts`: Handles all messages (`type`: whisper/dm) with channel routing and expiration logic.
+WhisperX is an evolving platform. Upcoming features include:
 
----
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+- **🔐 Encrypted Whispers**: Implementing E2EE for all Direct Messages.
+- **📂 Terminal File Transfer**: Send binary files as base64-encoded "data whispers."
+- **🤖 Bot Protocol**: Native support for terminal-based automation bots.
+- **📱 Mobile Communicator**: A dedicated responsive UI designed like a retro handheld device.
+- **📡 Matrix Bridge**: Connecting WhisperX to the global Matrix messaging network.
 
 ---
 
