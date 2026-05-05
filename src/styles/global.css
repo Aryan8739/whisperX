@@ -406,6 +406,9 @@ body::before {
     text-align: center;
     transform: scale(1);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .nick-modal.hidden .nick-box {
@@ -678,7 +681,8 @@ body::before {
 
 /* SETTINGS MODAL */
 .settings-box {
-    max-width: 500px;
+    width: 700px;
+    max-width: 100%;
     text-align: left;
 }
 

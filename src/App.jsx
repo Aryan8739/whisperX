@@ -16,6 +16,8 @@ export default function App() {
     const setNickname = useStore((s) => s.setNickname);
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
     const loadPosts = useStore((s) => s.loadPosts);
+    const loadUsers = useStore((s) => s.loadUsers);
+    const loadRecentConversations = useStore((s) => s.loadRecentConversations);
     const nickname = useStore((s) => s.nickname);
     const theme = useStore((s) => s.theme);
     const [isBooting, setIsBooting] = useState(true);
@@ -36,9 +38,13 @@ export default function App() {
             if (savedNick) setNickname(savedNick);
             else setShowNicknameModal(true);
 
-            await loadPosts();
-            playStartup();
+            await Promise.all([
+                loadPosts(),
+                loadUsers(),
+                loadRecentConversations()
+            ]);
             
+            playStartup();
             setTimeout(() => setIsBooting(false), 2000);
         }
         init();

@@ -261,36 +261,40 @@ export const useStore = create((set, get) => ({
     }
   },
   async getIdentityKey() {
-    const { user } = get();
-    if (!user) return null;
+    const storageKey = Object.keys(localStorage).find(k => k.includes("-auth-token"));
+    if (!storageKey) return null;
 
-    // We use a deterministic password based on the user's unique ID 
-    // and a secret salt to ensure it's stable and secure.
-    const email = `${user.id}@whisperx.identity`;
-    const password = `key_${user.id.substring(0, 8)}_safe`;
+    const sessionData = localStorage.getItem(storageKey);
+    if (!sessionData) return null;
 
-    try {
-      // Convert anonymous user to permanent email user
-      const { error } = await supabase.auth.updateUser({ email, password });
-      // If error is "Email already exists", it means they already linked it. We ignore.
-      if (error && !error.message.includes("already registered")) throw error;
-      
-      return btoa(`${email}:${password}`);
-    } catch (e) {
-      console.error("Identity export failed", e);
-      return null;
-    }
+    const nickname = localStorage.getItem("nickname");
+    
+    // Bundle session and nickname together
+    const packageData = JSON.stringify({
+        session: JSON.parse(sessionData),
+        nickname: nickname
+    });
+
+    return btoa(packageData);
   },
   async restoreIdentity(key) {
     try {
-      const decoded = atob(key);
-      const [email, password] = decoded.split(":");
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      set({ user: data.user });
+      const packageData = JSON.parse(atob(key));
+      const sessionData = JSON.stringify(packageData.session);
+      const nickname = packageData.nickname;
+
+      let storageKey = Object.keys(localStorage).find(k => k.includes("-auth-token"));
+      if (!storageKey) {
+          storageKey = `sb-${import.meta.env.VITE_SUPABASE_URL.split('.')[0].replace('https://', '')}-auth-token`;
+      }
+
+      localStorage.setItem(storageKey, sessionData);
+      if (nickname) {
+          localStorage.setItem("nickname", nickname);
+      }
       return true;
     } catch (e) {
-      console.error("Identity restoration failed", e);
+      console.error("Deep migration failed", e);
       return false;
     }
   },
