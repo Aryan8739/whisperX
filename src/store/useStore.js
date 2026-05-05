@@ -39,7 +39,10 @@ export const useStore = create((set, get) => ({
   posts: [],
   isLoadingPosts: false,
   setPosts: (posts) => set({ posts }),
-  prependPost: (post) => set((s) => ({ posts: [post, ...s.posts] })),
+  prependPost: (post) => set((s) => {
+    if (s.posts.find(p => p.id === post.id)) return s;
+    return { posts: [post, ...s.posts] };
+  }),
   setLoadingPosts: (v) => set({ isLoadingPosts: v }),
   showNicknameModal: false,
   setShowNicknameModal: (v) => set({ showNicknameModal: v }),
@@ -64,7 +67,10 @@ export const useStore = create((set, get) => ({
     }
   },
   setDMPosts: (dmPosts) => set({ dmPosts }),
-  prependDMPost: (post) => set((s) => ({ dmPosts: [post, ...s.dmPosts] })),
+  prependDMPost: (post) => set((s) => {
+    if (s.dmPosts.find(p => p.id === post.id)) return s;
+    return { dmPosts: [post, ...s.dmPosts] };
+  }),
   toggleSidePanel: () => set((s) => ({ isSidePanelOpen: !s.isSidePanelOpen })),
   addSystemMessage: (text) => {
     const newMessage = {
@@ -124,18 +130,39 @@ export const useStore = create((set, get) => ({
 
   async postWhisper(text) {
     const { user, nickname, currentChannel, isPosting } = get();
-    if (!user || isPosting) return;
+    if (!user || isPosting || !text.trim()) return;
 
-    set({ isPosting: true });
-    await supabase.from("posts").insert({
+    const optimisticPost = {
+      id: `temp-${Date.now()}`,
       type: "whisper",
       text_content: text,
-      audio_url: null,
+      user_id: user.id,
+      nickname: nickname || "anon",
+      created_at: new Date().toISOString(),
+      channel: currentChannel,
+      is_optimistic: true
+    };
+    
+    set((s) => ({ posts: [optimisticPost, ...s.posts] }));
+    set({ isPosting: true });
+
+    const { data, error } = await supabase.from("posts").insert({
+      type: "whisper",
+      text_content: text,
       user_id: user.id,
       nickname: nickname || "anon",
       expires_at: new Date(Date.now() + 86400000).toISOString(),
       channel: currentChannel,
-    });
+    }).select().single();
+
+    if (error) {
+      set((s) => ({ posts: s.posts.filter(p => p.id !== optimisticPost.id) }));
+      get().addSystemMessage("Failed to send whisper.");
+    } else if (data) {
+      set((s) => ({ 
+        posts: s.posts.map(p => p.id === optimisticPost.id ? data : p) 
+      }));
+    }
     set({ isPosting: false });
   },
 
@@ -217,20 +244,41 @@ export const useStore = create((set, get) => ({
     const { user, nickname, activeDMRecipient, isPosting } = get();
     if (!user || !activeDMRecipient || isPosting || !text.trim()) return;
 
-    set({ isPosting: true });
-    
     const ids = [user.id, activeDMRecipient.uid].sort();
     const dmChannel = `dm_${ids[0]}_${ids[1]}`;
 
-    await supabase.from("posts").insert({
+    const optimisticPost = {
+      id: `temp-dm-${Date.now()}`,
       type: "dm",
       text_content: text,
-      audio_url: null,
+      user_id: user.id,
+      nickname: nickname || "anon",
+      created_at: new Date().toISOString(),
+      channel: dmChannel,
+      is_optimistic: true
+    };
+
+    set((s) => ({ dmPosts: [optimisticPost, ...s.dmPosts] }));
+    set({ isPosting: true });
+    
+    const { data, error } = await supabase.from("posts").insert({
+      type: "dm",
+      text_content: text,
       user_id: user.id,
       nickname: nickname || "anon",
       expires_at: new Date(Date.now() + 86400000).toISOString(),
       channel: dmChannel,
-    });
+    }).select().single();
+
+    if (error) {
+        set((s) => ({ dmPosts: s.dmPosts.filter(p => p.id !== optimisticPost.id) }));
+        get().addSystemMessage("Failed to send DM.");
+    } else if (data) {
+        set((s) => ({ 
+            dmPosts: s.dmPosts.map(p => p.id === optimisticPost.id ? data : p) 
+        }));
+    }
+
     set({ isPosting: false });
     get().loadRecentConversations();
   },

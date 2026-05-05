@@ -40,14 +40,12 @@ export function PostFeed() {
     const setActiveOverlay = useStore((s) => s.setActiveOverlay);
     const setSelectedProfileUser = useStore((s) => s.setSelectedProfileUser);
 
-    // Sort ascending (Oldest at top, newest at bottom)
     const allMessages = [...posts, ...systemLogs].sort(
         (a, b) => new Date(a.created_at) - new Date(b.created_at)
     );
 
     const otherTyping = Object.keys(typingUsers).filter(uid => uid !== currentUser?.id);
 
-    // Auto-scroll to bottom
     useEffect(() => {
         if (feedRef.current) {
             feedRef.current.scrollTop = feedRef.current.scrollHeight;

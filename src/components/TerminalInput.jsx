@@ -84,7 +84,6 @@ export function TerminalInput() {
             const trimmed = text.trim();
             if (!trimmed || isPosting) return;
 
-            // Save to history
             setHistory(prev => [trimmed, ...prev.filter(h => h !== trimmed)].slice(0, 50));
             setHistoryIndex(-1);
 

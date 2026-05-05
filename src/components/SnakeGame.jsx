@@ -15,13 +15,11 @@ export function SnakeGame({ onClose }) {
 
         const newHead = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
-        // Walls
         if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
             setGameOver(true);
             return;
         }
 
-        // Self collision
         if (snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
             setGameOver(true);
             return;
@@ -29,7 +27,6 @@ export function SnakeGame({ onClose }) {
 
         const newSnake = [newHead, ...snake];
 
-        // Food
         if (newHead.x === food.x && newHead.y === food.y) {
             setScore(s => s + 10);
             setFood({

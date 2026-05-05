@@ -40,7 +40,7 @@ export function useRealtime() {
                 supabase.removeChannel(channelRef.current);
             }
         };
-    }, [currentChannel, prependPost]);
+    }, [currentChannel, prependPost, user]);
 
     useEffect(() => {
         if (dmChannelRef.current) {
@@ -114,7 +114,6 @@ export function useRealtime() {
                 }
             });
 
-        // Update tracking metadata when typing state changes
         if (presenceChannel) {
             presenceChannel.track({
                 uid: user.id,
