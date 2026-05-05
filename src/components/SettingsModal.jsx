@@ -18,6 +18,8 @@ export function SettingsModal() {
     const setShowSettingsModal = useStore((s) => s.setShowSettingsModal);
     const theme = useStore((s) => s.theme);
     const setTheme = useStore((s) => s.setTheme);
+    const isAudioEnabled = useStore((s) => s.isAudioEnabled);
+    const toggleAudio = useStore((s) => s.toggleAudio);
 
     if (!showSettingsModal) return null;
 
@@ -55,7 +57,19 @@ export function SettingsModal() {
                 </div>
 
                 <div className="settings-section">
-                    <h4>Command Reference</h4>
+                    <h3>SYSTEM AUDIO</h3>
+                    <div className="theme-options">
+                        <button 
+                            className={`theme-btn ${isAudioEnabled ? 'active' : ''}`}
+                            onClick={toggleAudio}
+                        >
+                            {isAudioEnabled ? "AUDIO: ON" : "AUDIO: OFF"}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="settings-section">
+                    <h3>COMMAND REFERENCE</h3>
                     <div className="command-list">
                         {COMMANDS.map((c) => (
                             <div key={c.cmd} className="command-item">

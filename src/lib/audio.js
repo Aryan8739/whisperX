@@ -2,16 +2,20 @@
 let audioCtx = null;
 
 const initAudio = () => {
+    const isEnabled = localStorage.getItem("isAudioEnabled") !== "false";
+    if (!isEnabled) return false;
+
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
+    return true;
 };
 
 export const playClick = () => {
-    initAudio();
+    if (!initAudio()) return;
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -30,7 +34,7 @@ export const playClick = () => {
 };
 
 export const playBlip = () => {
-    initAudio();
+    if (!initAudio()) return;
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -49,7 +53,7 @@ export const playBlip = () => {
 };
 
 export const playError = () => {
-    initAudio();
+    if (!initAudio()) return;
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
@@ -67,7 +71,7 @@ export const playError = () => {
 };
 
 export const playStartup = () => {
-    initAudio();
+    if (!initAudio()) return;
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 

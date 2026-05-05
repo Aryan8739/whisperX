@@ -5,6 +5,7 @@ export const useStore = create((set, get) => ({
   user: null,
   nickname: localStorage.getItem("nickname") || null,
   theme: localStorage.getItem("theme") || "green",
+  isAudioEnabled: localStorage.getItem("isAudioEnabled") !== "false",
   setUser: (user) => set({ user }),
   setNickname: (nickname) => {
     localStorage.setItem("nickname", nickname);
@@ -14,6 +15,11 @@ export const useStore = create((set, get) => ({
     localStorage.setItem("theme", theme);
     set({ theme });
   },
+  toggleAudio: () => set((s) => {
+    const newVal = !s.isAudioEnabled;
+    localStorage.setItem("isAudioEnabled", newVal);
+    return { isAudioEnabled: newVal };
+  }),
   currentChannel: localStorage.getItem("currentChannel") || "general",
   setChannel: (channel) => {
     localStorage.setItem("currentChannel", channel);
