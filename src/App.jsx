@@ -7,6 +7,7 @@ import { TerminalInput } from "@/components/TerminalInput";
 import { NicknameModal } from "@/components/NicknameModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidePanel } from "@/components/SidePanel";
+import { SettingsModal } from "@/components/SettingsModal";
 
 export default function App() {
     const ensureAuth = useStore((s) => s.ensureAuth);
@@ -15,8 +16,13 @@ export default function App() {
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
     const loadPosts = useStore((s) => s.loadPosts);
     const nickname = useStore((s) => s.nickname);
+    const theme = useStore((s) => s.theme);
 
     useRealtime();
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
     useEffect(() => {
         async function init() {
@@ -54,6 +60,7 @@ export default function App() {
             </div>
             <TerminalInput />
             <NicknameModal />
+            <SettingsModal />
         </>
     );
 }
