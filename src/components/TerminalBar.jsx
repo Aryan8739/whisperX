@@ -13,6 +13,7 @@ export function TerminalBar() {
     const loadPosts = useStore((s) => s.loadPosts);
     const nickname = useStore((s) => s.nickname);
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
+    const setShowSettingsModal = useStore((s) => s.setShowSettingsModal);
     const toggleSidePanel = useStore((s) => s.toggleSidePanel);
     const onlineUsers = useStore((s) => s.onlineUsers);
 
@@ -72,7 +73,10 @@ export function TerminalBar() {
                     >
                         Nickname
                     </span>
-                    <span className="menu-item" onClick={() => alert("Settings coming soon!")}>
+                    <span
+                        className="menu-item"
+                        onClick={() => setShowSettingsModal(true)}
+                    >
                         Settings
                     </span>
                 </div>
