@@ -11,6 +11,12 @@ export function TerminalInput() {
     const setNickname = useStore((s) => s.saveNickname);
     const setChannel = useStore((s) => s.setChannel);
     const loadPosts = useStore((s) => s.loadPosts);
+    const addSystemMessage = useStore((s) => s.addSystemMessage);
+    const clearLocalLogs = useStore((s) => s.clearLocalLogs);
+    const updateUserStatus = useStore((s) => s.updateUserStatus);
+    const users = useStore((s) => s.users);
+    const user = useStore((s) => s.user);
+    const setTheme = useStore((s) => s.setTheme);
 
     async function handleKeyDown(e) {
         if (e.key === "Enter") {
@@ -19,20 +25,48 @@ export function TerminalInput() {
 
             if (trimmed.startsWith("/")) {
                 const [cmd, ...args] = trimmed.slice(1).split(" ");
-                const arg = args.join(" ");
+                const arg = args.join(" ").trim();
 
-                if (cmd === "nick") {
-                    if (arg) await setNickname(arg);
-                    else alert("Usage: /nick <new_nickname>");
-                } else if (cmd === "join") {
-                    if (arg) {
-                        setChannel(arg);
-                        await loadPosts();
-                    } else alert("Usage: /join <channel_name>");
-                } else if (cmd === "help") {
-                    alert("Available commands:\n/nick <name> - Change nickname\n/join <channel> - Switch channel\n/help - Show this list");
-                } else {
-                    alert(`Unknown command: ${cmd}`);
+                switch (cmd) {
+                    case "nick":
+                        if (arg) await setNickname(arg);
+                        else addSystemMessage("Usage: /nick <new_nickname>");
+                        break;
+                    case "join":
+                        if (arg) {
+                            setChannel(arg);
+                            await loadPosts();
+                            addSystemMessage(`Switched to channel: #${arg}`);
+                        } else addSystemMessage("Usage: /join <channel_name>");
+                        break;
+                    case "help":
+                        addSystemMessage("AVAILABLE COMMANDS:\n/nick <name> - Change nickname\n/join <channel> - Switch channel\n/clear - Wipe terminal screen\n/whoami - Show your user info\n/users - List active users\n/status <msg> - Set activity status\n/theme <name> - Switch terminal theme (green, cyberpunk, orange, red, starwars)");
+                        break;
+                    case "clear":
+                        clearLocalLogs();
+                        addSystemMessage("Terminal cleared.");
+                        break;
+                    case "whoami":
+                        addSystemMessage(`USER INFO:\nID: ${user?.id}\nNICK: ${nickname || "anon"}\nAUTH: ${user?.is_anonymous ? "Anonymous" : "Authenticated"}`);
+                        break;
+                    case "users":
+                        const userList = users.map(u => `- ${u.nickname || 'anon'} (${u.uid.substring(0,4)})`).join("\n");
+                        addSystemMessage(`ACTIVE USERS:\n${userList || "No other users found."}`);
+                        break;
+                    case "status":
+                        await updateUserStatus(arg);
+                        break;
+                    case "theme":
+                        const validThemes = ["green", "cyberpunk", "orange", "red", "starwars"];
+                        if (validThemes.includes(arg.toLowerCase())) {
+                            setTheme(arg.toLowerCase());
+                            addSystemMessage(`Theme updated to: ${arg}`);
+                        } else {
+                            addSystemMessage(`Invalid theme. Available: ${validThemes.join(", ")}`);
+                        }
+                        break;
+                    default:
+                        addSystemMessage(`Unknown command: ${cmd}. Type /help for assistance.`);
                 }
                 setText("");
                 return;
