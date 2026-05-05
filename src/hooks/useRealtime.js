@@ -77,7 +77,9 @@ export function useRealtime() {
     }, [user, activeDMRecipient, prependDMPost]);
 
     const setOnlineUsers = useStore((s) => s.setOnlineUsers);
+    const setTypingUsers = useStore((s) => s.setTypingUsers);
     const nickname = useStore((s) => s.nickname);
+    const isLocalTyping = useStore((s) => s.isLocalTyping);
 
     useEffect(() => {
         if (!user) return;
@@ -88,27 +90,43 @@ export function useRealtime() {
             .on("presence", { event: "sync" }, () => {
                 const state = presenceChannel.presenceState();
                 const onlineObj = {};
+                const typingObj = {};
                 for (const id in state) {
                     if (state[id].length > 0) {
                         const presenceData = state[id][0];
                         onlineObj[presenceData.uid] = presenceData;
+                        if (presenceData.isTyping) {
+                            typingObj[presenceData.uid] = true;
+                        }
                     }
                 }
                 setOnlineUsers(onlineObj);
+                setTypingUsers(typingObj);
             })
             .subscribe(async (status) => {
                 if (status === "SUBSCRIBED") {
                     await presenceChannel.track({
                         uid: user.id,
                         channel: currentChannel,
-                        nickname: nickname
+                        nickname: nickname,
+                        isTyping: isLocalTyping
                     });
                 }
             });
+
+        // Update tracking metadata when typing state changes
+        if (presenceChannel) {
+            presenceChannel.track({
+                uid: user.id,
+                channel: currentChannel,
+                nickname: nickname,
+                isTyping: isLocalTyping
+            });
+        }
 
         return () => {
             presenceChannel.untrack();
             supabase.removeChannel(presenceChannel);
         };
-    }, [user, currentChannel, nickname, setOnlineUsers]);
+    }, [user, currentChannel, nickname, setOnlineUsers, setTypingUsers, isLocalTyping]);
 }

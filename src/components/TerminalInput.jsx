@@ -20,10 +20,22 @@ export function TerminalInput() {
     const setTheme = useStore((s) => s.setTheme);
     const getIdentityKey = useStore((s) => s.getIdentityKey);
     const restoreIdentity = useStore((s) => s.restoreIdentity);
+    const setIsLocalTyping = useStore((s) => s.setIsLocalTyping);
+    const setActiveOverlay = useStore((s) => s.setActiveOverlay);
 
     const [history, setHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
     const inputRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
+
+    const handleTextChange = (val) => {
+        setText(val);
+        setIsLocalTyping(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsLocalTyping(false);
+        }, 2000);
+    };
 
     useEffect(() => {
         if (!isPosting) {
@@ -152,6 +164,14 @@ export function TerminalInput() {
                             playError();
                         }
                         break;
+                    case "matrix":
+                        addSystemMessage("Initializing neural simulation...");
+                        setActiveOverlay("matrix");
+                        break;
+                    case "snake":
+                        addSystemMessage("Launching retro subsystem...");
+                        setActiveOverlay("snake");
+                        break;
                     default:
                         addSystemMessage(`Unknown command: ${cmd}. Type /help for assistance.`);
                         playError();
@@ -175,7 +195,7 @@ export function TerminalInput() {
                 autoComplete="off"
                 autoFocus
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={(e) => handleTextChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isPosting}
                 placeholder={isPosting ? "sending..." : ""}

@@ -26,8 +26,16 @@ export const useStore = create((set, get) => ({
     set({ currentChannel: channel, posts: [] });
   },
   onlineUsers: {},
+  typingUsers: {},
   setOnlineUsers: (onlineUsers) => set({ onlineUsers }),
+  setTypingUsers: (typingUsers) => set({ typingUsers }),
 
+  isLocalTyping: false,
+  setIsLocalTyping: (v) => set({ isLocalTyping: v }),
+  activeOverlay: null,
+  setActiveOverlay: (v) => set({ activeOverlay: v }),
+  selectedProfileUser: null,
+  setSelectedProfileUser: (v) => set({ selectedProfileUser: v }),
   posts: [],
   isLoadingPosts: false,
   setPosts: (posts) => set({ posts }),
@@ -155,7 +163,6 @@ export const useStore = create((set, get) => ({
 
     if (!error) {
       set({ dmPosts: data });
-      // Refresh recent conversations when a DM is loaded/sent
       get().loadRecentConversations();
     }
     set({ isLoadingDMPosts: false });
@@ -165,7 +172,6 @@ export const useStore = create((set, get) => ({
     const { user } = get();
     if (!user) return;
 
-    // Fetch latest messages from any DM channel containing the user ID
     const { data, error } = await supabase
       .from("posts")
       .select("channel, created_at, user_id, nickname")
@@ -188,7 +194,6 @@ export const useStore = create((set, get) => ({
         recent.push({
           uid: otherId,
           lastActivity: post.created_at,
-          // Temporary nickname from post if they sent it, otherwise we'll resolve it later
           nickname: post.user_id === otherId ? post.nickname : null 
         });
       }
@@ -269,7 +274,6 @@ export const useStore = create((set, get) => ({
 
     const nickname = localStorage.getItem("nickname");
     
-    // Bundle session and nickname together
     const packageData = JSON.stringify({
         session: JSON.parse(sessionData),
         nickname: nickname

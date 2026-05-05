@@ -9,6 +9,9 @@ import { NicknameModal } from "@/components/NicknameModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidePanel } from "@/components/SidePanel";
 import { SettingsModal } from "@/components/SettingsModal";
+import { MatrixEffect } from "@/components/MatrixEffect";
+import { SnakeGame } from "@/components/SnakeGame";
+import { ProfileCard } from "@/components/ProfileCard";
 
 export default function App() {
     const ensureAuth = useStore((s) => s.ensureAuth);
@@ -18,7 +21,10 @@ export default function App() {
     const loadPosts = useStore((s) => s.loadPosts);
     const loadUsers = useStore((s) => s.loadUsers);
     const loadRecentConversations = useStore((s) => s.loadRecentConversations);
-    const nickname = useStore((s) => s.nickname);
+    const activeOverlay = useStore((s) => s.activeOverlay);
+    const setActiveOverlay = useStore((s) => s.setActiveOverlay);
+    const selectedProfileUser = useStore((s) => s.selectedProfileUser);
+    const onlineUsers = useStore((s) => s.onlineUsers);
     const theme = useStore((s) => s.theme);
     const [isBooting, setIsBooting] = useState(true);
 
@@ -80,6 +86,16 @@ export default function App() {
             <TerminalInput />
             <NicknameModal />
             <SettingsModal />
+
+            {activeOverlay === "matrix" && <MatrixEffect onClose={() => setActiveOverlay(null)} />}
+            {activeOverlay === "snake" && <SnakeGame onClose={() => setActiveOverlay(null)} />}
+            {activeOverlay === "profile" && (
+                <ProfileCard 
+                    user={selectedProfileUser} 
+                    onlineData={onlineUsers[selectedProfileUser?.uid]} 
+                    onClose={() => setActiveOverlay(null)} 
+                />
+            )}
         </>
     );
 }

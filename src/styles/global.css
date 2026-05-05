@@ -7,8 +7,9 @@
     --bg-color: #050a08;
     --panel-bg: rgba(5, 15, 10, 0.85);
     --glass-border: rgba(0, 255, 85, 0.3);
-    --text-main: #aaffcc;
+    --text-main: #ccffdd;
     --system-color: #ffaa00;
+    --text-glow: 0 0 5px rgba(0, 255, 85, 0.5);
 }
 
 [data-theme="orange"] {
@@ -20,6 +21,7 @@
     --glass-border: rgba(255, 136, 0, 0.3);
     --text-main: #ffe0b2;
     --system-color: #00ffcc;
+    --text-glow: 0 0 5px rgba(255, 136, 0, 0.4);
 }
 
 [data-theme="red"] {
@@ -29,8 +31,9 @@
     --bg-color: #0d0000;
     --panel-bg: rgba(20, 0, 0, 0.9);
     --glass-border: rgba(255, 0, 0, 0.2);
-    --text-main: #ffcccc;
+    --text-main: #ffdada;
     --system-color: #ffffff;
+    --text-glow: 0 0 5px rgba(255, 0, 0, 0.4);
 }
 
 [data-theme="cyberpunk"] {
@@ -40,8 +43,9 @@
     --bg-color: #0a000a;
     --panel-bg: rgba(15, 0, 15, 0.85);
     --glass-border: rgba(255, 0, 255, 0.3);
-    --text-main: #00ffff;
+    --text-main: #b2ffff;
     --system-color: #ffff00;
+    --text-glow: 0 0 5px rgba(255, 0, 255, 0.4);
 }
 
 [data-theme="starwars"] {
@@ -53,6 +57,7 @@
     --glass-border: rgba(255, 232, 31, 0.2);
     --text-main: #ffffff;
     --system-color: #4bd5ee;
+    --text-glow: 0 0 5px rgba(255, 232, 31, 0.4);
 }
 
 body {
@@ -81,11 +86,11 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    background-size: 100% 4px, 6px 100%;
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 2px, 3px 100%;
     z-index: 30;
-    mix-blend-mode: multiply;
+    mix-blend-mode: overlay;
 }
 
 .crt::after {
@@ -96,11 +101,11 @@ body::before {
     left: 0;
     bottom: 0;
     right: 0;
-    background: rgba(18, 16, 16, 0.1);
+    background: rgba(18, 16, 16, 0.05);
     opacity: 0;
     z-index: 30;
     pointer-events: none;
-    animation: flicker 0.15s infinite;
+    animation: flicker 0.2s infinite;
 }
 
 @keyframes flicker {
