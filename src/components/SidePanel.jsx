@@ -20,7 +20,8 @@ export function SidePanel() {
     const onlineUsers = useStore((s) => s.onlineUsers);
 
     const [dmInput, setDmInput] = useState("");
-    const [view, setView] = useState("recent"); // 'recent' or 'new'
+    const [view, setView] = useState("recent");
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         if (isSidePanelOpen) {
@@ -88,15 +89,37 @@ export function SidePanel() {
                                 <button className="back-btn-small" onClick={() => setView("recent")}>&lt; BACK</button>
                                 SELECT A USER
                             </div>
-                            {users.filter(u => u.uid !== currentUser?.id).map((u) => (
-                                <div 
-                                    key={u.uid} 
-                                    className="user-item"
-                                    onClick={() => handleSelectUser(u)}
-                                >
-                                    {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
-                                </div>
-                            ))}
+                            <div className="search-bar">
+                                <span className="search-icon">🔍</span>
+                                <input 
+                                    type="text" 
+                                    className="search-input" 
+                                    placeholder="Search by nickname or ID..." 
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key.length === 1 || e.key === "Backspace") playClick();
+                                    }}
+                                />
+                            </div>
+                            {users
+                                .filter(u => u.uid !== currentUser?.id)
+                                .filter(u => {
+                                    if (!searchTerm) return true;
+                                    const name = (u.nickname || "").toLowerCase();
+                                    const id = u.uid.toLowerCase();
+                                    const term = searchTerm.toLowerCase();
+                                    return name.includes(term) || id.includes(term);
+                                })
+                                .map((u) => (
+                                    <div 
+                                        key={u.uid} 
+                                        className="user-item"
+                                        onClick={() => handleSelectUser(u)}
+                                    >
+                                        {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
+                                    </div>
+                                ))}
                             {users.length <= 1 && <div className="no-users">No other users online.</div>}
                         </>
                     )}
