@@ -1,19 +1,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
 
 :root {
-    --neon-green: #00ff55;
-    --neon-green-dim: rgba(0, 255, 85, 0.4);
-    --neon-green-glow: #00ff55aa;
+    /* Default Green Theme (Original) */
+    --neon-color: #00ff55;
+    --neon-dim: rgba(0, 255, 85, 0.4);
+    --neon-glow: #00ff55aa;
     --bg-color: #050a08;
     --panel-bg: rgba(5, 15, 10, 0.85);
     --glass-border: rgba(0, 255, 85, 0.3);
+    --text-main: #aaffcc;
+    --system-color: #ffaa00;
+}
+
+[data-theme="orange"] {
+    --neon-color: #ff8800;
+    --neon-dim: rgba(255, 136, 0, 0.4);
+    --neon-glow: #ff8800aa;
+    --bg-color: #0f0a00;
+    --panel-bg: rgba(20, 15, 5, 0.85);
+    --glass-border: rgba(255, 136, 0, 0.3);
+    --text-main: #ffe0b2;
+    --system-color: #00ffcc;
+}
+
+[data-theme="red"] {
+    --neon-color: #ff0000;
+    --neon-dim: rgba(255, 0, 0, 0.3);
+    --neon-glow: #ff000088;
+    --bg-color: #0d0000;
+    --panel-bg: rgba(20, 0, 0, 0.9);
+    --glass-border: rgba(255, 0, 0, 0.2);
+    --text-main: #ffcccc;
+    --system-color: #ffffff;
+}
+
+[data-theme="cyberpunk"] {
+    --neon-color: #ff00ff;
+    --neon-dim: rgba(255, 0, 255, 0.4);
+    --neon-glow: #ff00ffaa;
+    --bg-color: #0a000a;
+    --panel-bg: rgba(15, 0, 15, 0.85);
+    --glass-border: rgba(255, 0, 255, 0.3);
+    --text-main: #00ffff;
+    --system-color: #ffff00;
+}
+
+[data-theme="starwars"] {
+    --neon-color: #ffe81f; /* Star Wars Yellow */
+    --neon-dim: rgba(255, 232, 31, 0.3);
+    --neon-glow: #ffe81faa;
+    --bg-color: #000000;
+    --panel-bg: rgba(10, 10, 10, 0.95);
+    --glass-border: rgba(255, 232, 31, 0.2);
+    --text-main: #ffffff;
+    --system-color: #4bd5ee; /* Rebellion Blue */
 }
 
 body {
     background: var(--bg-color);
     margin: 0;
     font-family: 'Share Tech Mono', monospace;
-    color: var(--neon-green);
+    color: var(--neon-color);
     overflow: hidden;
     padding-top: 55px;
     height: 100vh;
@@ -86,7 +133,7 @@ body::before {
     align-items: center;
     justify-content: space-between;
     padding: 0 25px;
-    box-shadow: 0 4px 15px rgba(0, 255, 85, 0.1);
+    box-shadow: 0 4px 15px var(--neon-dim);
     font-family: 'VT323', monospace;
     font-size: 20px;
     position: fixed;
@@ -97,9 +144,9 @@ body::before {
 }
 
 .terminal-bar .title {
-    color: var(--neon-green);
+    color: var(--neon-color);
     font-weight: bold;
-    text-shadow: 0 0 8px var(--neon-green-glow);
+    text-shadow: 0 0 8px var(--neon-glow);
     letter-spacing: 1.5px;
 }
 
@@ -109,7 +156,7 @@ body::before {
 }
 
 .menu-item {
-    color: #88ffbb;
+    color: var(--text-main);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     text-shadow: 0 0 3px rgba(0, 255, 85, 0.4);
@@ -117,8 +164,8 @@ body::before {
 }
 
 .menu-item:hover {
-    color: var(--neon-green);
-    text-shadow: 0 0 10px var(--neon-green);
+    color: var(--neon-color);
+    text-shadow: 0 0 10px var(--neon-color);
     transform: translateY(-1px);
 }
 
@@ -130,9 +177,9 @@ body::before {
     height: 2px;
     bottom: -3px;
     left: 0;
-    background-color: var(--neon-green);
+    background-color: var(--neon-color);
     transition: width 0.3s ease;
-    box-shadow: 0 0 5px var(--neon-green);
+    box-shadow: 0 0 5px var(--neon-color);
 }
 
 .menu-item:hover::after {
@@ -147,7 +194,7 @@ body::before {
     background: var(--panel-bg);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 30px rgba(0, 255, 85, 0.15);
+    box-shadow: 0 10px 30px var(--neon-dim);
     width: 200px;
     z-index: 9000;
     border-radius: 4px;
@@ -164,7 +211,7 @@ body::before {
 
 .dropdown-item {
     padding: 12px 18px;
-    color: #88ffbb;
+    color: var(--text-main);
     border-bottom: 1px solid rgba(0, 255, 85, 0.1);
     cursor: pointer;
     font-family: 'Share Tech Mono', monospace;
@@ -176,11 +223,11 @@ body::before {
 }
 
 .dropdown-item:hover {
-    background: rgba(0, 255, 85, 0.15);
-    color: var(--neon-green);
+    background: var(--neon-dim);
+    color: var(--neon-color);
     padding-left: 22px;
     /* Slight indent on hover */
-    text-shadow: 0 0 8px var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-glow);
 }
 
 /* MAIN LAYOUT */
@@ -207,7 +254,7 @@ body::before {
     padding-bottom: 100px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--neon-green) #050a08;
+    scrollbar-color: var(--neon-color) #050a08;
 }
 
 /* Custom Scrollbar */
@@ -225,29 +272,27 @@ body::before {
 }
 
 #feed::-webkit-scrollbar-thumb:hover {
-    background: var(--neon-green);
+    background: var(--neon-color);
 }
 
 .post {
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    background: rgba(0, 255, 85, 0.03);
-    border-left: 3px solid var(--neon-green-dim);
-    transition: all 0.3s ease;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
     white-space: pre-wrap;
     position: relative;
 }
 
 .post:hover {
-    background: rgba(0, 255, 85, 0.06);
-    border-left-color: var(--neon-green);
-    box-shadow: inset 0 0 20px rgba(0, 255, 85, 0.05);
+    border-left-color: var(--neon-color);
+    padding-left: 15px;
 }
 
 .post-header {
     font-family: 'VT323', monospace;
     font-size: 20px;
-    color: var(--neon-green);
+    color: var(--neon-color);
     text-shadow: 0 0 5px var(--neon-green-glow);
     margin-bottom: 8px;
     display: flex;
@@ -285,10 +330,20 @@ body::before {
 }
 
 .post-text {
-    color: #aaffcc;
+    color: var(--text-main);
     font-size: 16px;
     line-height: 1.5;
     text-shadow: 0 0 2px rgba(170, 255, 204, 0.4);
+}
+
+.system-post {
+    border-left-color: var(--system-color) !important;
+}
+
+.system-tag {
+    color: var(--system-color);
+    font-weight: bold;
+    text-shadow: 0 0 8px var(--system-color);
 }
 
 /* TERMINAL INPUT */
@@ -312,8 +367,8 @@ body::before {
     font-family: 'VT323', monospace;
     font-size: 22px;
     font-weight: normal;
-    text-shadow: 0 0 8px var(--neon-green);
-    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-glow);
+    color: var(--neon-color);
     white-space: nowrap;
 }
 
@@ -326,7 +381,7 @@ body::before {
     font-size: 18px;
     font-family: 'Share Tech Mono', monospace;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
-    caret-color: var(--neon-green);
+    caret-color: var(--neon-color);
 }
 
 #terminal-input::placeholder {
@@ -368,7 +423,7 @@ body::before {
 
 .nick-box h3 {
     margin: 0 0 20px;
-    color: var(--neon-green);
+    color: var(--neon-color);
     font-family: 'VT323', monospace;
     font-size: 32px;
     font-weight: normal;
@@ -380,9 +435,9 @@ body::before {
     width: 250px;
     padding: 12px 15px;
     background: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--neon-green-dim);
+    border: 1px solid var(--neon-dim);
     border-radius: 4px;
-    color: var(--neon-green);
+    color: var(--neon-color);
     font-family: 'Share Tech Mono', monospace;
     font-size: 16px;
     margin-bottom: 20px;
@@ -392,15 +447,15 @@ body::before {
 }
 
 .nick-box input:focus {
-    border-color: var(--neon-green);
+    border-color: var(--neon-color);
     box-shadow: 0 0 10px rgba(0, 255, 85, 0.3), inset 0 0 5px rgba(0, 0, 0, 0.8);
 }
 
 .nick-box button {
     padding: 10px 30px;
-    background: var(--neon-green-dim);
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
+    background: var(--neon-dim);
+    border: 1px solid var(--neon-color);
+    color: var(--neon-color);
     font-family: 'VT323', monospace;
     font-size: 22px;
     border-radius: 4px;
@@ -410,7 +465,7 @@ body::before {
 }
 
 .nick-box button:hover {
-    background: var(--neon-green);
+    background: var(--neon-color);
     color: #000;
     box-shadow: 0 0 15px var(--neon-green);
     transform: translateY(-2px);
@@ -439,7 +494,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 255, 85, 0.05);
+    background: var(--neon-dim);
 }
 
 .side-panel-header .title {
@@ -451,7 +506,7 @@ body::before {
 .close-btn {
     background: none;
     border: none;
-    color: var(--neon-green);
+    color: var(--neon-color);
     cursor: pointer;
     font-family: 'Share Tech Mono', monospace;
     font-size: 16px;
@@ -471,7 +526,7 @@ body::before {
 
 .users-list-title {
     font-size: 14px;
-    color: var(--neon-green-dim);
+    color: var(--neon-color);
     margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -480,7 +535,7 @@ body::before {
 .user-item {
     padding: 10px 15px;
     margin-bottom: 8px;
-    background: rgba(0, 255, 85, 0.03);
+    background: var(--neon-dim);
     cursor: pointer;
     transition: all 0.2s;
     border-left: 2px solid transparent;
@@ -491,43 +546,43 @@ body::before {
 
 .user-item-time {
     font-size: 0.75em;
-    color: var(--neon-green-dim);
+    color: var(--neon-color);
 }
 
 .new-convo-btn {
     width: 100%;
     margin-top: 15px;
     padding: 10px;
-    background: rgba(0, 255, 85, 0.1);
+    background: var(--neon-dim);
     border: 1px dashed var(--glass-border);
-    color: var(--neon-green);
+    color: var(--neon-color);
     font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .new-convo-btn:hover {
-    background: rgba(0, 255, 85, 0.2);
-    border-color: var(--neon-green);
-    text-shadow: 0 0 5px var(--neon-green);
+    background: var(--neon-dim);
+    border-color: var(--neon-color);
+    text-shadow: 0 0 5px var(--neon-color);
 }
 
 .back-btn-small {
     background: none;
     border: none;
-    color: var(--neon-green-dim);
+    color: var(--neon-color);
     font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
     margin-right: 10px;
 }
 
 .back-btn-small:hover {
-    color: var(--neon-green);
+    color: var(--neon-color);
 }
 
 .user-item:hover {
-    background: rgba(0, 255, 85, 0.1);
-    border-left-color: var(--neon-green);
+    background: var(--neon-dim);
+    border-left-color: var(--neon-color);
     transform: translateX(5px);
 }
 
@@ -566,12 +621,12 @@ body::before {
 }
 
 .back-btn:hover {
-    background: rgba(0, 255, 85, 0.1);
+    background: var(--neon-dim);
 }
 
 .dm-header .highlight {
     color: #fff;
-    text-shadow: 0 0 5px var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-color);
 }
 
 .dm-feed {
@@ -585,7 +640,7 @@ body::before {
 .dm-post {
     margin-bottom: 12px;
     padding: 10px;
-    background: rgba(0, 255, 85, 0.05);
+    background: var(--neon-dim);
     border-radius: 4px;
 }
 
@@ -628,4 +683,60 @@ body::before {
 
 .dm-input::placeholder {
     color: rgba(0, 255, 85, 0.3);
+}
+
+/* SETTINGS MODAL */
+.settings-box {
+    max-width: 500px;
+    text-align: left;
+}
+
+.settings-section h4 {
+    color: var(--neon-green-dim);
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.command-item {
+    border-bottom: 1px dashed rgba(0, 255, 85, 0.1);
+    padding: 10px 0;
+    transition: all 0.2s;
+}
+
+.command-item:hover {
+    background: var(--neon-dim);
+    padding-left: 5px;
+}
+
+.command-name {
+    color: var(--neon-green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    text-shadow: 0 0 5px var(--neon-green-glow);
+}
+
+.command-desc {
+    color: var(--text-main);
+    opacity: 0.7;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.theme-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+
+.theme-btn:hover {
+    background: var(--neon-dim) !important;
+    color: var(--neon-color) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px var(--neon-dim);
+}
+
+.theme-btn.active {
+    box-shadow: 0 0 15px var(--neon-glow);
 }

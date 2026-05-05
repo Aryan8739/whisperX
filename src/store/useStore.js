@@ -5,10 +5,15 @@ export const useStore = create((set, get) => ({
   // Auth
   user: null,
   nickname: localStorage.getItem("nickname") || null,
+  theme: localStorage.getItem("theme") || "green",
   setUser: (user) => set({ user }),
   setNickname: (nickname) => {
     localStorage.setItem("nickname", nickname);
     set({ nickname });
+  },
+  setTheme: (theme) => {
+    localStorage.setItem("theme", theme);
+    set({ theme });
   },
 
   // Channel
@@ -33,6 +38,9 @@ export const useStore = create((set, get) => ({
   showNicknameModal: false,
   setShowNicknameModal: (v) => set({ showNicknameModal: v }),
 
+  showSettingsModal: false,
+  setShowSettingsModal: (v) => set({ showSettingsModal: v }),
+
   isPosting: false,
   setIsPosting: (v) => set({ isPosting: v }),
 
@@ -43,6 +51,7 @@ export const useStore = create((set, get) => ({
   dmPosts: [],
   isLoadingDMPosts: false,
   isSidePanelOpen: false,
+  systemLogs: [],
   setUsers: (users) => set({ users }),
   setActiveDMRecipient: (user) => {
     set({ activeDMRecipient: user, dmPosts: [], isSidePanelOpen: true });
@@ -53,6 +62,19 @@ export const useStore = create((set, get) => ({
   setDMPosts: (dmPosts) => set({ dmPosts }),
   prependDMPost: (post) => set((s) => ({ dmPosts: [post, ...s.dmPosts] })),
   toggleSidePanel: () => set((s) => ({ isSidePanelOpen: !s.isSidePanelOpen })),
+
+  // System & Local Actions
+  addSystemMessage: (text) => {
+    const newMessage = {
+      id: `sys-${Date.now()}`,
+      type: "system",
+      text_content: text,
+      created_at: new Date().toISOString(),
+      nickname: "SYSTEM"
+    };
+    set((s) => ({ systemLogs: [...s.systemLogs, newMessage] }));
+  },
+  clearLocalLogs: () => set({ systemLogs: [], posts: [] }),
 
   // Actions
   async ensureAuth() {
@@ -234,6 +256,22 @@ export const useStore = create((set, get) => ({
     if (!error) {
       localStorage.setItem("nickname", nick);
       set({ nickname: nick, showNicknameModal: false });
+      get().addSystemMessage(`Nickname updated to: ${nick}`);
+    }
+  },
+
+  async updateUserStatus(status) {
+    const { user } = get();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("users")
+      .update({ status_message: status })
+      .eq("uid", user.id);
+
+    if (!error) {
+      get().addSystemMessage(`Status updated: ${status || "cleared"}`);
+      get().loadUsers();
     }
   },
 }));
