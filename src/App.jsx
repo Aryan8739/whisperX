@@ -73,7 +73,7 @@ export default function App() {
     }
 
     return (
-        <>
+        <div className="app-container">
             <TerminalBar />
             <div className="crt" aria-hidden="true" />
             <div className="main-layout">
@@ -90,6 +90,6 @@ export default function App() {
 
             {activeOverlay === "matrix" && <MatrixEffect onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === "snake" && <SnakeGame onClose={() => setActiveOverlay(null)} />}
-        </>
+        </div>
     );
 }
