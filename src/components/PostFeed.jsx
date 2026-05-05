@@ -47,15 +47,15 @@ export function PostFeed() {
 
     const otherTyping = Object.keys(typingUsers).filter(uid => uid !== currentUser?.id);
 
+    const messageCount = allMessages.length;
+
     const scrollToBottom = () => {
-        requestAnimationFrame(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
         scrollToBottom();
-    }, [allMessages, otherTyping]);
+    }, [messageCount, otherTyping.length]);
 
     if (isLoading && !posts.length) {
         return (

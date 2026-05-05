@@ -66,10 +66,18 @@ body {
     font-family: 'Share Tech Mono', monospace;
     color: var(--neon-color);
     overflow: hidden;
-    padding-top: 55px;
     height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 body::before {
@@ -109,17 +117,9 @@ body::before {
 }
 
 @keyframes flicker {
-    0% {
-        opacity: 0.02;
-    }
-
-    50% {
-        opacity: 0.05;
-    }
-
-    100% {
-        opacity: 0.02;
-    }
+    0% { opacity: 0.02; }
+    50% { opacity: 0.05; }
+    100% { opacity: 0.02; }
 }
 
 .terminal-bar {
@@ -201,12 +201,6 @@ body::before {
     transform-origin: top;
 }
 
-.dropdown.hidden {
-    opacity: 0;
-    transform: scaleY(0);
-    pointer-events: none;
-}
-
 .dropdown-item {
     padding: 12px 18px;
     color: var(--text-main);
@@ -216,25 +210,21 @@ body::before {
     transition: all 0.2s;
 }
 
-.dropdown-item:last-child {
-    border-bottom: none;
-}
-
 .dropdown-item:hover {
     background: var(--neon-dim);
     color: var(--neon-color);
-    padding-left: 22px;
     text-shadow: 0 0 8px var(--neon-glow);
 }
 
 .main-layout {
+    flex: 1;
     display: flex;
-    flex-grow: 1;
+    flex-direction: row;
     overflow: hidden;
-    margin-bottom: 0;
     position: relative;
     z-index: 10;
-    height: 0; /* Important: allow flex child to shrink/grow and scroll */
+    margin-top: 45px;
+    height: calc(100vh - 45px);
 }
 
 .main-content {

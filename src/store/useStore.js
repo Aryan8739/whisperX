@@ -40,7 +40,11 @@ export const useStore = create((set, get) => ({
   isLoadingPosts: false,
   setPosts: (posts) => set({ posts }),
   prependPost: (post) => set((s) => {
+    // Check if post already exists (either by real ID or if it's replacing an optimistic one)
     if (s.posts.find(p => p.id === post.id)) return s;
+    // If it's our own post, we might already have it in the list (as optimistic or updated)
+    // But prependPost is usually for OTHER people's posts.
+    // However, Supabase sends real-time events for OUR posts too.
     return { posts: [post, ...s.posts] };
   }),
   setLoadingPosts: (v) => set({ isLoadingPosts: v }),
