@@ -70,4 +70,41 @@ export function useRealtime() {
             }
         };
     }, [user, activeDMRecipient, prependDMPost]);
+
+    // Presence Subscription
+    const setOnlineUsers = useStore((s) => s.setOnlineUsers);
+    const nickname = useStore((s) => s.nickname);
+
+    useEffect(() => {
+        if (!user) return;
+
+        const presenceChannel = supabase.channel("global_presence");
+
+        presenceChannel
+            .on("presence", { event: "sync" }, () => {
+                const state = presenceChannel.presenceState();
+                const onlineObj = {};
+                for (const id in state) {
+                    if (state[id].length > 0) {
+                        const presenceData = state[id][0];
+                        onlineObj[presenceData.uid] = presenceData;
+                    }
+                }
+                setOnlineUsers(onlineObj);
+            })
+            .subscribe(async (status) => {
+                if (status === "SUBSCRIBED") {
+                    await presenceChannel.track({
+                        uid: user.id,
+                        channel: currentChannel,
+                        nickname: nickname
+                    });
+                }
+            });
+
+        return () => {
+            presenceChannel.untrack();
+            supabase.removeChannel(presenceChannel);
+        };
+    }, [user, currentChannel, nickname, setOnlineUsers]);
 }

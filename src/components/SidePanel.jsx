@@ -14,6 +14,7 @@ export function SidePanel() {
     const isLoadingDMPosts = useStore((s) => s.isLoadingDMPosts);
     const postDM = useStore((s) => s.postDM);
     const currentUser = useStore((s) => s.user);
+    const onlineUsers = useStore((s) => s.onlineUsers);
 
     const [dmInput, setDmInput] = useState("");
 
@@ -49,7 +50,7 @@ export function SidePanel() {
                             className="user-item"
                             onClick={() => setActiveDMRecipient(u)}
                         >
-                            {'>'} {getUserDisplay(u.nickname, u.uid)}
+                            {onlineUsers[u.uid] ? "🟢" : "⚪"} {getUserDisplay(u.nickname, u.uid)}
                         </div>
                     ))}
                     {users.length <= 1 && <div className="no-users">No other users online.</div>}
@@ -58,7 +59,10 @@ export function SidePanel() {
                 <div className="dm-view">
                     <div className="dm-header">
                         <button className="back-btn" onClick={() => setActiveDMRecipient(null)}>&lt; BACK</button>
-                        <span>Chatting with: <span className="highlight">{getUserDisplay(activeDMRecipient.nickname, activeDMRecipient.uid)}</span></span>
+                        <span>Chatting with: <span className="highlight">
+                            {onlineUsers[activeDMRecipient.uid] ? "🟢 " : "⚪ "} 
+                            {getUserDisplay(activeDMRecipient.nickname, activeDMRecipient.uid)}
+                        </span></span>
                     </div>
                     
                     <div className="dm-feed">

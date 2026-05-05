@@ -11,6 +11,16 @@ export function TerminalBar() {
     const nickname = useStore((s) => s.nickname);
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
     const toggleSidePanel = useStore((s) => s.toggleSidePanel);
+    const onlineUsers = useStore((s) => s.onlineUsers);
+
+    // Calculate users per channel
+    const channelCounts = {};
+    CHANNELS.forEach(ch => channelCounts[ch] = 0);
+    Object.values(onlineUsers).forEach(u => {
+        if (channelCounts[u.channel] !== undefined) {
+            channelCounts[u.channel]++;
+        }
+    });
 
     async function handleChannelSwitch(ch) {
         setChannel(ch);
@@ -53,7 +63,7 @@ export function TerminalBar() {
                             className={`dropdown-item${ch === currentChannel ? " active" : ""}`}
                             onClick={() => handleChannelSwitch(ch)}
                         >
-                            # {ch}
+                            # {ch} <span style={{ opacity: 0.6, fontSize: "0.8em", marginLeft: "8px" }}>({channelCounts[ch]} online)</span>
                         </div>
                     ))}
                 </div>

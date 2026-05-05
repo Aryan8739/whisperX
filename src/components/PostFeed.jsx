@@ -22,6 +22,8 @@ function Post({ post, onUserClick }) {
 export function PostFeed() {
     const posts = useStore((s) => s.posts);
     const isLoading = useStore((s) => s.isLoadingPosts);
+    const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
+    const currentUser = useStore((s) => s.user);
 
     if (isLoading) {
         return (
@@ -42,9 +44,6 @@ export function PostFeed() {
             </div>
         );
     }
-
-    const setActiveDMRecipient = useStore((s) => s.setActiveDMRecipient);
-    const currentUser = useStore((s) => s.user);
 
     return (
         <div id="feed">

@@ -18,6 +18,10 @@ export const useStore = create((set, get) => ({
     set({ currentChannel: channel, posts: [] });
   },
 
+  // Presence
+  onlineUsers: {},
+  setOnlineUsers: (onlineUsers) => set({ onlineUsers }),
+
   //Posts 
   posts: [],
   isLoadingPosts: false,
