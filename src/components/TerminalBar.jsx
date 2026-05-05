@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useStore } from "@/store/useStore";
 
 const CHANNELS = ["general", "confessions", "tech", "events", "hostel", "random"];
 
 export function TerminalBar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const channelsBtnRef = useRef(null);
+    
     const currentChannel = useStore((s) => s.currentChannel);
     const setChannel = useStore((s) => s.setChannel);
     const loadPosts = useStore((s) => s.loadPosts);
@@ -12,6 +15,22 @@ export function TerminalBar() {
     const setShowNicknameModal = useStore((s) => s.setShowNicknameModal);
     const toggleSidePanel = useStore((s) => s.toggleSidePanel);
     const onlineUsers = useStore((s) => s.onlineUsers);
+
+    // Handle click outside to close dropdown
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                dropdownRef.current && 
+                !dropdownRef.current.contains(event.target) &&
+                channelsBtnRef.current &&
+                !channelsBtnRef.current.contains(event.target)
+            ) {
+                setDropdownOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Calculate users per channel
     const channelCounts = {};
@@ -34,7 +53,11 @@ export function TerminalBar() {
                 <div className="title">CAMPUS WHISPER — CRT TERMINAL</div>
                 <div className="menu">
                     <span className="menu-item" onClick={loadPosts}>Home</span>
-                    <span className="menu-item" onClick={() => setDropdownOpen((v) => !v)}>
+                    <span 
+                        className="menu-item" 
+                        ref={channelsBtnRef}
+                        onClick={() => setDropdownOpen((v) => !v)}
+                    >
                         Channels ▾
                     </span>
                     <span
@@ -56,7 +79,7 @@ export function TerminalBar() {
             </div>
 
             {dropdownOpen && (
-                <div className="dropdown">
+                <div className="dropdown" ref={dropdownRef}>
                     {CHANNELS.map((ch) => (
                         <div
                             key={ch}
