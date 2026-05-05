@@ -8,6 +8,8 @@ const COMMANDS = [
     { cmd: "/users", desc: "List all active users in the system" },
     { cmd: "/status <msg>", desc: "Update your activity status message" },
     { cmd: "/theme <name>", desc: "Change aesthetic (green, cyberpunk, orange, red, starwars)" },
+    { cmd: "/key", desc: "Get your secret Identity Key for migration" },
+    { cmd: "/restore <key>", desc: "Log in to an existing identity" },
     { cmd: "/help", desc: "Show command reference in terminal" },
 ];
 

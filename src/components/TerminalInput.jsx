@@ -18,6 +18,8 @@ export function TerminalInput() {
     const users = useStore((s) => s.users);
     const user = useStore((s) => s.user);
     const setTheme = useStore((s) => s.setTheme);
+    const getIdentityKey = useStore((s) => s.getIdentityKey);
+    const restoreIdentity = useStore((s) => s.restoreIdentity);
 
     const [history, setHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
@@ -98,7 +100,7 @@ export function TerminalInput() {
                         }
                         break;
                     case "help":
-                        addSystemMessage("AVAILABLE COMMANDS:\n/nick <name> - Change nickname\n/join <channel> - Switch channel\n/clear - Wipe terminal screen\n/whoami - Show your user info\n/users - List active users\n/status <msg> - Set activity status\n/theme <name> - Switch terminal theme (green, cyberpunk, orange, red, starwars)");
+                        addSystemMessage("AVAILABLE COMMANDS:\n/nick <name> - Change nickname\n/join <channel> - Switch channel\n/clear - Wipe terminal screen\n/whoami - Show your user info\n/users - List active users\n/status <msg> - Set activity status\n/theme <name> - Switch terminal theme (green, cyberpunk, orange, red, starwars)\n/key - Get your identity key\n/restore <key> - Log in using a key");
                         break;
                     case "clear":
                         clearLocalLogs();
@@ -122,6 +124,31 @@ export function TerminalInput() {
                             playBlip();
                         } else {
                             addSystemMessage(`Invalid theme. Available: ${validThemes.join(", ")}`);
+                            playError();
+                        }
+                        break;
+                    case "key":
+                        const idKey = await getIdentityKey();
+                        if (idKey) {
+                            addSystemMessage(`IDENTITY KEY: ${idKey}\nKEEP THIS SECRET. Use /restore <key> on another device.`);
+                        } else {
+                            addSystemMessage("Could not retrieve identity key.");
+                            playError();
+                        }
+                        break;
+                    case "restore":
+                        if (arg) {
+                            const success = await restoreIdentity(arg);
+                            if (success) {
+                                addSystemMessage("Identity restored. Reloading system...");
+                                playBlip();
+                                setTimeout(() => window.location.reload(), 1500);
+                            } else {
+                                addSystemMessage("Invalid or expired identity key.");
+                                playError();
+                            }
+                        } else {
+                            addSystemMessage("Usage: /restore <identity_key>");
                             playError();
                         }
                         break;

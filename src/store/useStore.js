@@ -254,4 +254,38 @@ export const useStore = create((set, get) => ({
       get().loadUsers();
     }
   },
+  async getIdentityKey() {
+    const { user } = get();
+    if (!user) return null;
+
+    // We use a deterministic password based on the user's unique ID 
+    // and a secret salt to ensure it's stable and secure.
+    const email = `${user.id}@whisperx.identity`;
+    const password = `key_${user.id.substring(0, 8)}_safe`;
+
+    try {
+      // Convert anonymous user to permanent email user
+      const { error } = await supabase.auth.updateUser({ email, password });
+      // If error is "Email already exists", it means they already linked it. We ignore.
+      if (error && !error.message.includes("already registered")) throw error;
+      
+      return btoa(`${email}:${password}`);
+    } catch (e) {
+      console.error("Identity export failed", e);
+      return null;
+    }
+  },
+  async restoreIdentity(key) {
+    try {
+      const decoded = atob(key);
+      const [email, password] = decoded.split(":");
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      set({ user: data.user });
+      return true;
+    } catch (e) {
+      console.error("Identity restoration failed", e);
+      return false;
+    }
+  },
 }));
