@@ -73,7 +73,7 @@ export default function App() {
     }
 
     return (
-        <div className="app-container">
+        <div className={`app-container ${isSidePanelOpen ? 'side-panel-active' : ''}`}>
             <TerminalBar />
             <div className="crt" aria-hidden="true" />
             <div className="main-layout">
