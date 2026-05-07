@@ -227,6 +227,7 @@ body::before {
 .app-container {
     display: flex;
     flex-direction: column;
+    height: 100vh;
     height: 100dvh;
     /* dvh handles mobile URL bars perfectly */
     width: 100vw;
@@ -821,27 +822,41 @@ body::before {
     .terminal-bar {
         padding: 12px 15px;
         font-size: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 
     .terminal-bar .title {
         font-size: 14px;
         letter-spacing: 0.5px;
-        display: none;
-        /* Hide long title on very small screens */
+        display: block; /* Always visible */
     }
 
     /* Show title on slightly larger mobile */
     @media (min-width: 480px) {
-        .terminal-bar .title {
-            display: block;
+        .terminal-bar {
+            flex-direction: row;
+            align-items: center;
+        }
+        .menu {
+            overflow-x: visible;
         }
     }
 
     .menu {
         gap: 12px;
         font-size: 14px;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px; /* space for scrollbar if needed */
+        scrollbar-width: none; /* hide scrollbar for clean look */
     }
-
+    
+    .menu::-webkit-scrollbar {
+        display: none;
+    }
 
     #feed {
         padding: 15px;
